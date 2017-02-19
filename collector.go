@@ -49,8 +49,13 @@ func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 	if err := c.collectNextcloud(ch); err != nil {
 		log.Printf("Error during scrape: %s", err)
+
 		c.scrapeErrorsMetric.Inc()
+		c.upMetric.Set(0)
+	} else {
+		c.upMetric.Set(1)
 	}
+
 	c.upMetric.Collect(ch)
 	c.authErrorsMetric.Collect(ch)
 	c.scrapeErrorsMetric.Collect(ch)
@@ -61,6 +66,8 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 	if err != nil {
 		return err
 	}
+
+	req.SetBasicAuth(c.username, c.password)
 
 	res, err := c.client.Do(req)
 	if err != nil {
