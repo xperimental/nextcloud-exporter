@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
@@ -21,12 +22,14 @@ type nextcloudCollector struct {
 	scrapeErrorsMetric prometheus.Counter
 }
 
-func newCollector(infoURL *url.URL, username, password string) *nextcloudCollector {
+func newCollector(infoURL *url.URL, username, password string, timeout time.Duration) *nextcloudCollector {
 	return &nextcloudCollector{
 		infoURL:  infoURL,
 		username: username,
 		password: password,
-		client:   &http.Client{},
+		client: &http.Client{
+			Timeout: timeout,
+		},
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: "nextcloud_up",
 			Help: "Shows if nextcloud is deemed up by the collector.",

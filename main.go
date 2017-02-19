@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/pflag"
@@ -13,6 +14,7 @@ import (
 
 type config struct {
 	ListenAddr string
+	Timeout    time.Duration
 	InfoURL    *url.URL
 	Username   string
 	Password   string
@@ -21,10 +23,12 @@ type config struct {
 func parseConfig() (config, error) {
 	result := config{
 		ListenAddr: ":8080",
+		Timeout:    2 * time.Second,
 	}
 
 	var rawURL string
 	pflag.StringVarP(&result.ListenAddr, "addr", "a", result.ListenAddr, "Address to listen on for connections.")
+	pflag.DurationVarP(&result.Timeout, "timeout", "t", result.Timeout, "Timeout for getting server info document.")
 	pflag.StringVarP(&rawURL, "url", "l", "", "URL to nextcloud serverinfo page.")
 	pflag.StringVarP(&result.Username, "username", "u", "", "Username for connecting to nextcloud.")
 	pflag.StringVarP(&result.Password, "password", "p", "", "Password for connecting to nextcloud.")
@@ -58,7 +62,7 @@ func main() {
 	}
 
 	log.Printf("Nextcloud server: %s User: %s", config.InfoURL.Hostname(), config.Username)
-	collector := newCollector(config.InfoURL, config.Username, config.Password)
+	collector := newCollector(config.InfoURL, config.Username, config.Password, config.Timeout)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
