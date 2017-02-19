@@ -15,23 +15,23 @@ import (
 var (
 	usersDesc = prometheus.NewDesc(
 		"nextcloud_users_total",
-		"Contains the number of users of the instance.",
+		"Number of users of the instance.",
 		nil, nil)
 	filesDesc = prometheus.NewDesc(
 		"nextcloud_files_total",
-		"Contains the number of files served by the instance.",
+		"Number of files served by the instance.",
 		nil, nil)
 	sharesDesc = prometheus.NewDesc(
 		"nextcloud_shares_total",
-		"Contains the number of shares by type.",
+		"Number of shares by type.",
 		[]string{"type"}, nil)
 	federationsDesc = prometheus.NewDesc(
 		"nextcloud_shares_federated_total",
-		"Contains the number of federated shares by direction.",
+		"Number of federated shares by direction.",
 		[]string{"direction"}, nil)
 	activeUsersDesc = prometheus.NewDesc(
 		"nextcloud_active_users_total",
-		"Contains the number of active users for the last five minutes.",
+		"Number of active users for the last five minutes.",
 		nil, nil)
 )
 
