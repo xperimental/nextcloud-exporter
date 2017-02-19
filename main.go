@@ -23,7 +23,7 @@ type config struct {
 func parseConfig() (config, error) {
 	result := config{
 		ListenAddr: ":8080",
-		Timeout:    2 * time.Second,
+		Timeout:    5 * time.Second,
 	}
 
 	var rawURL string
