@@ -22,7 +22,7 @@ type config struct {
 
 func parseConfig() (config, error) {
 	result := config{
-		ListenAddr: ":8080",
+		ListenAddr: ":9205",
 		Timeout:    5 * time.Second,
 	}
 

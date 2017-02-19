@@ -19,7 +19,7 @@ To access the serverinfo API you will need the credentials of an admin user. It 
 ```
 $ nextcloud-exporter --help
 Usage of nextcloud-exporter:
-  -a, --addr string        Address to listen on for connections. (default ":8080")
+  -a, --addr string        Address to listen on for connections. (default ":9205")
   -p, --password string    Password for connecting to nextcloud.
   -t, --timeout duration   Timeout for getting server info document. (default 5s)
   -l, --url string         URL to nextcloud serverinfo page.
@@ -35,7 +35,5 @@ scrape_configs:
   - job_name: 'nextcloud'
     scrape_interval: 90s
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['localhost:9205']
 ```
-
-**Note:** The exporter currently uses port 8080 as a default as it does not have an "assigned exporter port" yet. Look at the [prometheus Wiki](https://github.com/prometheus/prometheus/wiki/Default-port-allocations) for any updates.
