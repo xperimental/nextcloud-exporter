@@ -1,5 +1,7 @@
 package serverinfo
 
+import "encoding/xml"
+
 // ServerInfo contains the complete data received from the server.
 type ServerInfo struct {
 	Meta Meta `xml:"meta"`
@@ -29,19 +31,54 @@ type Nextcloud struct {
 
 // System contains nextcloud configuration and system information.
 type System struct {
-	Version             string    `xml:"version"`
-	Theme               string    `xml:"theme"`
-	EnableAvatars       bool      `xml:"enable_avatars"`
-	EnablePreviews      bool      `xml:"enable_previews"`
-	MemcacheLocal       string    `xml:"memcache.local"`
-	MemcacheDistributed string    `xml:"memcache.distributed"`
-	MemcacheLocking     string    `xml:"memcache.locking"`
-	FilelockingEnabled  bool      `xml:"filelocking.enabled"`
-	Debug               bool      `xml:"debug"`
-	FreeSpace           int       `xml:"freespace"`
-	CPULoad             []float64 `xml:"cpuload"`
-	MemoryTotal         int       `xml:"mem_total"`
-	MemoryFree          int       `xml:"mem_free"`
+	Version             string `xml:"version"`
+	Theme               string `xml:"theme"`
+	EnableAvatars       bool   `xml:"enable_avatars"`
+	EnablePreviews      bool   `xml:"enable_previews"`
+	MemcacheLocal       string `xml:"memcache.local"`
+	MemcacheDistributed string `xml:"memcache.distributed"`
+	MemcacheLocking     string `xml:"memcache.locking"`
+	FilelockingEnabled  bool   `xml:"filelocking.enabled"`
+	Debug               bool   `xml:"debug"`
+	FreeSpace           int    `xml:"freespace"`
+	// <cpuload>
+	MemoryTotal int `xml:"mem_total"`
+	MemoryFree  int `xml:"mem_free"`
+}
+
+const boolYes = "yes"
+
+func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var raw struct {
+		Version             string `xml:"version"`
+		Theme               string `xml:"theme"`
+		EnableAvatars       string `xml:"enable_avatars"`
+		EnablePreviews      string `xml:"enable_previews"`
+		MemcacheLocal       string `xml:"memcache.local"`
+		MemcacheDistributed string `xml:"memcache.distributed"`
+		MemcacheLocking     string `xml:"memcache.locking"`
+		FilelockingEnabled  string `xml:"filelocking.enabled"`
+		Debug               string `xml:"debug"`
+		FreeSpace           int    `xml:"freespace"`
+		MemoryTotal         int    `xml:"mem_total"`
+		MemoryFree          int    `xml:"mem_free"`
+	}
+	if err := d.DecodeElement(&raw, &start); err != nil {
+		return err
+	}
+	s.Version = raw.Version
+	s.Theme = raw.Theme
+	s.EnableAvatars = raw.EnableAvatars == boolYes
+	s.EnablePreviews = raw.EnablePreviews == boolYes
+	s.MemcacheLocal = raw.MemcacheLocal
+	s.MemcacheDistributed = raw.MemcacheDistributed
+	s.MemcacheLocking = raw.MemcacheLocking
+	s.FilelockingEnabled = raw.FilelockingEnabled == boolYes
+	s.Debug = raw.Debug == boolYes
+	s.FreeSpace = raw.FreeSpace
+	s.MemoryTotal = raw.MemoryTotal
+	s.MemoryFree = raw.MemoryFree
+	return nil
 }
 
 // Storage contains information about the nextcloud storage system.

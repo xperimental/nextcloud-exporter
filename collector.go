@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
 type nextcloudCollector struct {
@@ -82,6 +84,11 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	var status serverinfo.ServerInfo
+	if err := xml.NewDecoder(res.Body).Decode(&status); err != nil {
+		return err
 	}
 
 	return nil
