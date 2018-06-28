@@ -1,4 +1,4 @@
-# nextcloud-exporter
+# nextcloud-exporter [![Docker Build Status](https://img.shields.io/docker/build/xperimental/nextcloud-exporter.svg?style=flat-square)](https://hub.docker.com/r/xperimental/nextcloud-exporter/)
 
 A [prometheus](https://prometheus.io) exporter for getting some metrics of a nextcloud server instance.
 
