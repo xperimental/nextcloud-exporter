@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/pflag"
@@ -24,14 +25,16 @@ func parseConfig() (config, error) {
 	result := config{
 		ListenAddr: ":9205",
 		Timeout:    5 * time.Second,
+		Username:   os.Getenv("NEXTCLOUD_USERNAME"),
+		Password:   os.Getenv("NEXTCLOUD_PASSWORD"),
 	}
 
-	var rawURL string
+	rawURL := os.Getenv("NEXTCLOUD_SERVERINFO_URL");
 	pflag.StringVarP(&result.ListenAddr, "addr", "a", result.ListenAddr, "Address to listen on for connections.")
 	pflag.DurationVarP(&result.Timeout, "timeout", "t", result.Timeout, "Timeout for getting server info document.")
-	pflag.StringVarP(&rawURL, "url", "l", "", "URL to nextcloud serverinfo page.")
-	pflag.StringVarP(&result.Username, "username", "u", "", "Username for connecting to nextcloud.")
-	pflag.StringVarP(&result.Password, "password", "p", "", "Password for connecting to nextcloud.")
+	pflag.StringVarP(&rawURL, "url", "l", rawURL, "URL to nextcloud serverinfo page.")
+	pflag.StringVarP(&result.Username, "username", "u", result.Username, "Username for connecting to nextcloud.")
+	pflag.StringVarP(&result.Password, "password", "p", result.Password, "Password for connecting to nextcloud.")
 	pflag.Parse()
 
 	if len(rawURL) == 0 {

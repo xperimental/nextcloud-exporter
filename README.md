@@ -26,6 +26,16 @@ Usage of nextcloud-exporter:
   -u, --username string    Username for connecting to nextcloud.
 ```
 
+Some settings can also be specified through environment variables:
+
+Name                     | Description
+-------------------------|-------------------------------------
+NEXTCLOUD_SERVERINFO_URL | URL to nextcloud serverinfo page
+NEXTCLOUD_USERNAME       | Username for connecting to nextcloud
+NEXTCLOUD_PASSWORD       | Password for connecting to nextcloud
+
+Command line arguments take precedence over environment variables.
+
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
 
 The exporter will query the nextcloud server every time it is scraped by prometheus. If you want to reduce load on the nextcloud server you need to change the scrape interval accordingly:
