@@ -2,15 +2,16 @@ FROM golang:1 AS builder
 
 RUN apt-get update && apt-get install -y upx
 
-ENV PACKAGE=github.com/xperimental/nextcloud-exporter
-
-RUN mkdir -p /go/src/${PACKAGE}
-WORKDIR /go/src/${PACKAGE}
+WORKDIR /build
 
 ENV LD_FLAGS="-w"
 ENV CGO_ENABLED=0
 
-COPY . /go/src/${PACKAGE}
+COPY go.mod go.sum /build/
+RUN go mod download
+RUN go mod verify
+
+COPY . /build/
 RUN echo "-- TEST" \
  && go test ./... \
  && echo "-- BUILD" \
