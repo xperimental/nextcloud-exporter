@@ -40,10 +40,10 @@ type System struct {
 	MemcacheLocking     string `xml:"memcache.locking"`
 	FilelockingEnabled  bool   `xml:"filelocking.enabled"`
 	Debug               bool   `xml:"debug"`
-	FreeSpace           uint   `xml:"freespace"`
+	FreeSpace           uint64 `xml:"freespace"`
 	// <cpuload>
-	MemoryTotal uint `xml:"mem_total"`
-	MemoryFree  uint `xml:"mem_free"`
+	MemoryTotal uint64 `xml:"mem_total"`
+	MemoryFree  uint64 `xml:"mem_free"`
 }
 
 const boolYes = "yes"
@@ -59,9 +59,9 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		MemcacheLocking     string `xml:"memcache.locking"`
 		FilelockingEnabled  string `xml:"filelocking.enabled"`
 		Debug               string `xml:"debug"`
-		FreeSpace           uint   `xml:"freespace"`
-		MemoryTotal         uint   `xml:"mem_total"`
-		MemoryFree          uint   `xml:"mem_free"`
+		FreeSpace           uint64 `xml:"freespace"`
+		MemoryTotal         uint64 `xml:"mem_total"`
+		MemoryFree          uint64 `xml:"mem_free"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -118,16 +118,16 @@ type Server struct {
 // PHP contains information about the PHP installation.
 type PHP struct {
 	Version           string `xml:"version"`
-	MemoryLimit       int    `xml:"memory_limit"`
+	MemoryLimit       int64  `xml:"memory_limit"`
 	MaxExecutionTime  uint   `xml:"max_execution_time"`
-	UploadMaxFilesize int    `xml:"upload_max_filesize"`
+	UploadMaxFilesize int64  `xml:"upload_max_filesize"`
 }
 
 // Database contains information about the database used by nextcloud.
 type Database struct {
 	Type    string `xml:"type"`
 	Version string `xml:"version"`
-	Size    uint   `xml:"size"`
+	Size    uint64 `xml:"size"`
 }
 
 // ActiveUsers contains statistics about the active users.
