@@ -40,10 +40,10 @@ type System struct {
 	MemcacheLocking     string `xml:"memcache.locking"`
 	FilelockingEnabled  bool   `xml:"filelocking.enabled"`
 	Debug               bool   `xml:"debug"`
-	FreeSpace           int    `xml:"freespace"`
+	FreeSpace           uint   `xml:"freespace"`
 	// <cpuload>
-	MemoryTotal int `xml:"mem_total"`
-	MemoryFree  int `xml:"mem_free"`
+	MemoryTotal uint `xml:"mem_total"`
+	MemoryFree  uint `xml:"mem_free"`
 }
 
 const boolYes = "yes"
@@ -59,9 +59,9 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		MemcacheLocking     string `xml:"memcache.locking"`
 		FilelockingEnabled  string `xml:"filelocking.enabled"`
 		Debug               string `xml:"debug"`
-		FreeSpace           int    `xml:"freespace"`
-		MemoryTotal         int    `xml:"mem_total"`
-		MemoryFree          int    `xml:"mem_free"`
+		FreeSpace           uint   `xml:"freespace"`
+		MemoryTotal         uint   `xml:"mem_total"`
+		MemoryFree          uint   `xml:"mem_free"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -83,23 +83,23 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 // Storage contains information about the nextcloud storage system.
 type Storage struct {
-	Users         int `xml:"num_users"`
-	Files         int `xml:"num_files"`
-	Storages      int `xml:"num_storages"`
-	StoragesLocal int `xml:"num_storages_local"`
-	StoragesHome  int `xml:"num_storages_home"`
-	StoragesOther int `xml:"num_storages_other"`
+	Users         uint `xml:"num_users"`
+	Files         uint `xml:"num_files"`
+	Storages      uint `xml:"num_storages"`
+	StoragesLocal uint `xml:"num_storages_local"`
+	StoragesHome  uint `xml:"num_storages_home"`
+	StoragesOther uint `xml:"num_storages_other"`
 }
 
 // Shares contains information about nextcloud shares.
 type Shares struct {
-	SharesTotal          int `xml:"num_shares"`
-	SharesUser           int `xml:"num_shares_user"`
-	SharesGroups         int `xml:"num_shares_groups"`
-	SharesLink           int `xml:"num_shares_link"`
-	SharesLinkNoPassword int `xml:"num_shares_link_no_password"`
-	FedSent              int `xml:"num_fed_shares_sent"`
-	FedReceived          int `xml:"num_fed_shares_received"`
+	SharesTotal          uint `xml:"num_shares"`
+	SharesUser           uint `xml:"num_shares_user"`
+	SharesGroups         uint `xml:"num_shares_groups"`
+	SharesLink           uint `xml:"num_shares_link"`
+	SharesLinkNoPassword uint `xml:"num_shares_link_no_password"`
+	FedSent              uint `xml:"num_fed_shares_sent"`
+	FedReceived          uint `xml:"num_fed_shares_received"`
 	// <permissions_0_1>2</permissions_0_1>
 	// <permissions_3_1>4</permissions_3_1>
 	// <permissions_0_15>2</permissions_0_15>
@@ -119,7 +119,7 @@ type Server struct {
 type PHP struct {
 	Version           string `xml:"version"`
 	MemoryLimit       int    `xml:"memory_limit"`
-	MaxExecutionTime  int    `xml:"max_execution_time"`
+	MaxExecutionTime  uint   `xml:"max_execution_time"`
 	UploadMaxFilesize int    `xml:"upload_max_filesize"`
 }
 
@@ -127,12 +127,12 @@ type PHP struct {
 type Database struct {
 	Type    string `xml:"type"`
 	Version string `xml:"version"`
-	Size    int    `xml:"size"`
+	Size    uint   `xml:"size"`
 }
 
 // ActiveUsers contains statistics about the active users.
 type ActiveUsers struct {
-	Last5Minutes int `xml:"last5minutes"`
-	LastHour     int `xml:"last1hour"`
-	LastDay      int `xml:"last24hours"`
+	Last5Minutes uint `xml:"last5minutes"`
+	LastHour     uint `xml:"last1hour"`
+	LastDay      uint `xml:"last24hours"`
 }
