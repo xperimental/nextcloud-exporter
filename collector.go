@@ -21,6 +21,10 @@ var (
 		"nextcloud_files_total",
 		"Number of files served by the instance.",
 		nil, nil)
+	freeSpaceDesc = prometheus.NewDesc(
+		"nextcloud_freespace",
+		"Number of bytes of free space on the instance.",
+		nil, nil)
 	sharesDesc = prometheus.NewDesc(
 		"nextcloud_shares_total",
 		"Number of shares by type.",
@@ -74,6 +78,7 @@ func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 	c.scrapeErrorsMetric.Describe(ch)
 	ch <- usersDesc
 	ch <- filesDesc
+	ch <- freeSpaceDesc
 	ch <- sharesDesc
 	ch <- federationsDesc
 	ch <- activeUsersDesc
@@ -149,6 +154,10 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerI
 		{
 			desc:  filesDesc,
 			value: float64(status.Data.Nextcloud.Storage.Files),
+		},
+		{
+			desc:  freeSpaceDesc,
+			value: float64(status.Data.Nextcloud.System.FreeSpace),
 		},
 		{
 			desc:  activeUsersDesc,
