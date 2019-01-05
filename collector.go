@@ -158,7 +158,7 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerI
 	for _, m := range metrics {
 		metric, err := prometheus.NewConstMetric(m.desc, prometheus.GaugeValue, m.value)
 		if err != nil {
-			return fmt.Errorf("error creating metric for %s: %s", usersDesc.String(), err)
+			return fmt.Errorf("error creating metric for %s: %s", m.desc, err)
 		}
 		ch <- metric
 	}
