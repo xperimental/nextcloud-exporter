@@ -12,29 +12,33 @@ import (
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
+const (
+	metricPrefix = "nextcloud_"
+)
+
 var (
 	usersDesc = prometheus.NewDesc(
-		"nextcloud_users_total",
+		metricPrefix+"users_total",
 		"Number of users of the instance.",
 		nil, nil)
 	filesDesc = prometheus.NewDesc(
-		"nextcloud_files_total",
+		metricPrefix+"files_total",
 		"Number of files served by the instance.",
 		nil, nil)
 	freeSpaceDesc = prometheus.NewDesc(
-		"nextcloud_free_space_bytes",
+		metricPrefix+"free_space_bytes",
 		"Number of bytes of free space on the instance.",
 		nil, nil)
 	sharesDesc = prometheus.NewDesc(
-		"nextcloud_shares_total",
+		metricPrefix+"shares_total",
 		"Number of shares by type.",
 		[]string{"type"}, nil)
 	federationsDesc = prometheus.NewDesc(
-		"nextcloud_shares_federated_total",
+		metricPrefix+"shares_federated_total",
 		"Number of federated shares by direction.",
 		[]string{"direction"}, nil)
 	activeUsersDesc = prometheus.NewDesc(
-		"nextcloud_active_users_total",
+		metricPrefix+"active_users_total",
 		"Number of active users for the last five minutes.",
 		nil, nil)
 )
@@ -58,15 +62,15 @@ func newCollector(infoURL *url.URL, username, password string, timeout time.Dura
 			Timeout: timeout,
 		},
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "nextcloud_up",
+			Name: metricPrefix + "up",
 			Help: "Shows if nextcloud is deemed up by the collector.",
 		}),
 		authErrorsMetric: prometheus.NewCounter(prometheus.CounterOpts{
-			Name: "nextcloud_auth_errors_total",
+			Name: metricPrefix + "auth_errors_total",
 			Help: "Counts number of authentication errors encountered by the collector.",
 		}),
 		scrapeErrorsMetric: prometheus.NewCounter(prometheus.CounterOpts{
-			Name: "nextcloud_scrape_errors_total",
+			Name: metricPrefix + "scrape_errors_total",
 			Help: "Counts the number of scrape errors by this collector.",
 		}),
 	}
