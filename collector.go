@@ -22,7 +22,7 @@ var (
 		"Number of files served by the instance.",
 		nil, nil)
 	freeSpaceDesc = prometheus.NewDesc(
-		"nextcloud_freespace",
+		"nextcloud_free_space_bytes",
 		"Number of bytes of free space on the instance.",
 		nil, nil)
 	sharesDesc = prometheus.NewDesc(
