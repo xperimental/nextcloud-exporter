@@ -16,7 +16,7 @@ To access the serverinfo API you will need the credentials of an admin user. It 
 
 ## Usage
 
-```
+```plain
 $ nextcloud-exporter --help
 Usage of nextcloud-exporter:
   -a, --addr string        Address to listen on for connections. (default ":9205")
@@ -47,3 +47,13 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9205']
 ```
+
+### Info URL
+
+The exporter reads the metrics from the Nextcloud server using its "serverinfo" API. You can find the URL of this API in the administrator settings in the "Monitoring" section. It should look something like this:
+
+```plain
+https://example.com/ocs/v2.php/apps/serverinfo/api/v1/info
+```
+
+If you open this URL in a browser you should see an XML structure with the information that will be used by the exporter.
