@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/xml"
 	"fmt"
 	"log"
 	"net/http"
@@ -145,12 +144,14 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
-
-	var status serverinfo.ServerInfo
-	if err := xml.NewDecoder(res.Body).Decode(&status); err != nil {
-		return err
+	status, err := serverinfo.Parse(res.Body)
+	if err != nil {
+		return fmt.Errorf("Error parsing server info: %s", err)
 	}
+	return readMetrics(ch, status)
+}
 
+func readMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerInfo) error {
 	if err := collectSimpleMetrics(ch, status); err != nil {
 		return err
 	}
