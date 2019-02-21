@@ -40,7 +40,7 @@ type System struct {
 	MemcacheLocking     string `xml:"memcache.locking"`
 	FilelockingEnabled  bool   `xml:"filelocking.enabled"`
 	Debug               bool   `xml:"debug"`
-	FreeSpace           uint64 `xml:"freespace"`
+	FreeSpace           int64  `xml:"freespace"`
 	// <cpuload>
 	MemoryTotal uint64 `xml:"mem_total"`
 	MemoryFree  uint64 `xml:"mem_free"`
@@ -59,7 +59,7 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		MemcacheLocking     string `xml:"memcache.locking"`
 		FilelockingEnabled  string `xml:"filelocking.enabled"`
 		Debug               string `xml:"debug"`
-		FreeSpace           uint64 `xml:"freespace"`
+		FreeSpace           int64  `xml:"freespace"`
 		MemoryTotal         uint64 `xml:"mem_total"`
 		MemoryFree          uint64 `xml:"mem_free"`
 	}
