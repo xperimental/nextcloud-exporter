@@ -17,6 +17,10 @@ const (
 )
 
 var (
+	systemInfoDesc = prometheus.NewDesc(
+		metricPrefix+"system_info",
+		"Contains meta information about Nextcloud as labels. Value is always 1.",
+		[]string{"version"}, nil)
 	usersDesc = prometheus.NewDesc(
 		metricPrefix+"users_total",
 		"Number of users of the instance.",
@@ -41,6 +45,10 @@ var (
 		metricPrefix+"active_users_total",
 		"Number of active users for the last five minutes.",
 		nil, nil)
+	phpInfoDesc = prometheus.NewDesc(
+		metricPrefix+"php_info",
+		"Contains meta information about PHP as labels. Value is always 1.",
+		[]string{"version"}, nil)
 	phpMemoryLimitDesc = prometheus.NewDesc(
 		metricPrefix+"php_memory_limit_bytes",
 		"Configured PHP memory limit in bytes.",
@@ -155,6 +163,20 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 		return err
 	}
 
+	systemInfo := []string{
+		status.Data.Nextcloud.System.Version,
+	}
+	if err := collectInfoMetric(ch, systemInfoDesc, systemInfo); err != nil {
+		return err
+	}
+
+	phpInfo := []string{
+		status.Data.Server.PHP.Version,
+	}
+	if err := collectInfoMetric(ch, phpInfoDesc, phpInfo); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -230,5 +252,15 @@ func collectMap(ch chan<- prometheus.Metric, desc *prometheus.Desc, labelValueMa
 		ch <- metric
 	}
 
+	return nil
+}
+
+func collectInfoMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, labelValues []string) error {
+	metric, err := prometheus.NewConstMetric(desc, prometheus.GaugeValue, 1, labelValues...)
+	if err != nil {
+		return err
+	}
+
+	ch <- metric
 	return nil
 }
