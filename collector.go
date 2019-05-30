@@ -41,6 +41,18 @@ var (
 		metricPrefix+"active_users_total",
 		"Number of active users for the last five minutes.",
 		nil, nil)
+	phpMemoryLimitDesc = prometheus.NewDesc(
+		metricPrefix+"php_memory_limit_bytes",
+		"Configured PHP memory limit in bytes.",
+		nil, nil)
+	phpMaxUploadSizeDesc = prometheus.NewDesc(
+		metricPrefix+"php_upload_max_size_bytes",
+		"Configured maximum upload size in bytes.",
+		nil, nil)
+	databaseSizeDesc = prometheus.NewDesc(
+		metricPrefix+"database_size_bytes",
+		"Size of database in bytes as reported from engine.",
+		nil, nil)
 )
 
 type nextcloudCollector struct {
@@ -166,6 +178,18 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerI
 		{
 			desc:  activeUsersDesc,
 			value: float64(status.Data.ActiveUsers.Last5Minutes),
+		},
+		{
+			desc:  phpMemoryLimitDesc,
+			value: float64(status.Data.Server.PHP.MemoryLimit),
+		},
+		{
+			desc:  phpMaxUploadSizeDesc,
+			value: float64(status.Data.Server.PHP.UploadMaxFilesize),
+		},
+		{
+			desc:  databaseSizeDesc,
+			value: float64(status.Data.Server.Database.Size),
 		},
 	}
 	for _, m := range metrics {
