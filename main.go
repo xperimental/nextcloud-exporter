@@ -6,10 +6,11 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 )
 
@@ -70,7 +71,7 @@ func main() {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
 
-	http.Handle("/metrics", prometheus.UninstrumentedHandler())
+	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
 
 	log.Printf("Listen on %s...", config.ListenAddr)
