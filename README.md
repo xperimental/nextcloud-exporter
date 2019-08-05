@@ -18,12 +18,13 @@ To access the serverinfo API you will need the credentials of an admin user. It 
 
 ```plain
 $ nextcloud-exporter --help
-Usage of nextcloud-exporter:
-  -a, --addr string        Address to listen on for connections. (default ":9205")
-  -p, --password string    Password for connecting to nextcloud.
-  -t, --timeout duration   Timeout for getting server info document. (default 5s)
-  -l, --url string         URL to nextcloud serverinfo page.
-  -u, --username string    Username for connecting to nextcloud.
+Usage of ./result/bin/nextcloud-exporter:
+  -a, --addr string            Address to listen on for connections. (default ":9205")
+  -p, --password string        Password for connecting to nextcloud.
+      --password-file string   File containing the password for connecting to nextcloud.
+  -t, --timeout duration       Timeout for getting server info document. (default 5s)
+  -l, --url string             URL to nextcloud serverinfo page.
+  -u, --username string        Username for connecting to nextcloud.
 ```
 
 Some settings can also be specified through environment variables:
@@ -33,6 +34,7 @@ Name                     | Description
 NEXTCLOUD_SERVERINFO_URL | URL to nextcloud serverinfo page
 NEXTCLOUD_USERNAME       | Username for connecting to nextcloud
 NEXTCLOUD_PASSWORD       | Password for connecting to nextcloud
+NEXTCLOUD_PASSWORD_FILE  | File containing the password for connecting to nextcloud
 
 Command line arguments take precedence over environment variables.
 
