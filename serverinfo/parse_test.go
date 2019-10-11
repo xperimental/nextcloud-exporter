@@ -8,6 +8,7 @@ import (
 func TestParseServerInfo(t *testing.T) {
 	inputFiles := []string{
 		"negative-space.xml",
+		"na-values.xml",
 	}
 
 	for _, inputFile := range inputFiles {

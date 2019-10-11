@@ -42,8 +42,6 @@ type System struct {
 	Debug               bool   `xml:"debug"`
 	FreeSpace           int64  `xml:"freespace"`
 	// <cpuload>
-	MemoryTotal uint64 `xml:"mem_total"`
-	MemoryFree  uint64 `xml:"mem_free"`
 }
 
 const boolYes = "yes"
@@ -60,8 +58,6 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		FilelockingEnabled  string `xml:"filelocking.enabled"`
 		Debug               string `xml:"debug"`
 		FreeSpace           int64  `xml:"freespace"`
-		MemoryTotal         uint64 `xml:"mem_total"`
-		MemoryFree          uint64 `xml:"mem_free"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -76,8 +72,6 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	s.FilelockingEnabled = raw.FilelockingEnabled == boolYes
 	s.Debug = raw.Debug == boolYes
 	s.FreeSpace = raw.FreeSpace
-	s.MemoryTotal = raw.MemoryTotal
-	s.MemoryFree = raw.MemoryFree
 	return nil
 }
 
