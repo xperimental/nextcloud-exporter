@@ -11,6 +11,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const (
+	defaultPath = "/ocs/v2.php/apps/serverinfo/api/v1/info"
+)
+
 type config struct {
 	ListenAddr string
 	Timeout    time.Duration
@@ -82,6 +86,10 @@ func convertConfig(raw rawConfig) (config, error) {
 		return config{}, fmt.Errorf("info URL is not valid: %s", err)
 	}
 	result.InfoURL = infoURL
+
+	if result.InfoURL.Path == "" {
+		result.InfoURL.Path = defaultPath
+	}
 
 	if strings.HasPrefix(result.Password, "@") {
 		fileName := strings.TrimPrefix(result.Password, "@")
