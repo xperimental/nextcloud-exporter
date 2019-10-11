@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"time"
@@ -53,23 +53,25 @@ func parseConfig() (config, error) {
 	}
 
 	if len(result.PasswordFile) != 0 {
-		fd, err := os.Open(result.PasswordFile)
+		password, err := readPasswordFile(result.PasswordFile)
 		if err != nil {
-			return result, fmt.Errorf("could not open password file: %s", err)
+			return result, fmt.Errorf("can not read password file: %s", err)
 		}
-		defer fd.Close()
 
-		s := bufio.NewScanner(fd)
-		if s.Scan() {
-			result.Password = s.Text()
-			return result, nil
-		} else {
-			return result, errors.New("read empty password from given password file")
-		}
+		result.Password = password
 	}
 	if len(result.Password) == 0 {
 		return result, errors.New("need to provide a password")
 	}
 
 	return result, nil
+}
+
+func readPasswordFile(fileName string) (string, error) {
+	bytes, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
 }
