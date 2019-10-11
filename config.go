@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -20,47 +19,78 @@ type config struct {
 	Password   string
 }
 
+type rawConfig struct {
+	ListenAddr string        `yaml:"listenAddress"`
+	Timeout    time.Duration `yaml:"timeout"`
+	InfoURL    string        `yaml:"infoUrl"`
+	Username   string        `yaml:"username"`
+	Password   string        `yaml:"password"`
+}
+
 func parseConfig() (config, error) {
-	result := config{
-		ListenAddr: ":9205",
-		Timeout:    5 * time.Second,
-		Username:   os.Getenv("NEXTCLOUD_USERNAME"),
-		Password:   os.Getenv("NEXTCLOUD_PASSWORD"),
+	raw := loadConfigFromFlags()
+
+	if len(raw.InfoURL) == 0 {
+		return config{}, errors.New("need to provide an info URL")
 	}
 
-	rawURL := os.Getenv("NEXTCLOUD_SERVERINFO_URL");
-	pflag.StringVarP(&result.ListenAddr, "addr", "a", result.ListenAddr, "Address to listen on for connections.")
-	pflag.DurationVarP(&result.Timeout, "timeout", "t", result.Timeout, "Timeout for getting server info document.")
-	pflag.StringVarP(&rawURL, "url", "l", rawURL, "URL to nextcloud serverinfo page.")
-	pflag.StringVarP(&result.Username, "username", "u", result.Username, "Username for connecting to nextcloud.")
-	pflag.StringVarP(&result.Password, "password", "p", result.Password, "Password for connecting to nextcloud.")
-	pflag.Parse()
-
-	if len(rawURL) == 0 {
-		return result, errors.New("need to provide an info URL")
-	}
-
-	infoURL, err := url.Parse(rawURL)
+	result, err := convertConfig(raw)
 	if err != nil {
-		return result, fmt.Errorf("info URL is not valid: %s", err)
+		return config{}, err
 	}
-	result.InfoURL = infoURL
 
 	if len(result.Username) == 0 {
-		return result, errors.New("need to provide a username")
+		return config{}, errors.New("need to provide a username")
 	}
+
+	if len(result.Password) == 0 {
+		return config{}, errors.New("need to provide a password")
+	}
+
+	return result, nil
+}
+
+func defaultConfig() config {
+	return config{
+		ListenAddr: ":9205",
+		Timeout:    5 * time.Second,
+	}
+}
+
+func loadConfigFromFlags() (result rawConfig) {
+	defaults := defaultConfig()
+	pflag.StringVarP(&result.ListenAddr, "addr", "a", defaults.ListenAddr, "Address to listen on for connections.")
+	pflag.DurationVarP(&result.Timeout, "timeout", "t", defaults.Timeout, "Timeout for getting server info document.")
+	pflag.StringVarP(&result.InfoURL, "url", "l", "", "URL to nextcloud serverinfo page.")
+	pflag.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to nextcloud.")
+	pflag.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to nextcloud.")
+	pflag.Parse()
+
+	return result
+}
+
+func convertConfig(raw rawConfig) (config, error) {
+	result := config{
+		ListenAddr: raw.ListenAddr,
+		Timeout:    raw.Timeout,
+		Username:   raw.Username,
+		Password:   raw.Password,
+	}
+
+	infoURL, err := url.Parse(raw.InfoURL)
+	if err != nil {
+		return config{}, fmt.Errorf("info URL is not valid: %s", err)
+	}
+	result.InfoURL = infoURL
 
 	if strings.HasPrefix(result.Password, "@") {
 		fileName := strings.TrimPrefix(result.Password, "@")
 		password, err := readPasswordFile(fileName)
 		if err != nil {
-			return result, fmt.Errorf("can not read password file: %s", err)
+			return config{}, fmt.Errorf("can not read password file: %s", err)
 		}
 
 		result.Password = password
-	}
-	if len(result.Password) == 0 {
-		return result, errors.New("need to provide a password")
 	}
 
 	return result, nil
