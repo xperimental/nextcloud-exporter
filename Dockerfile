@@ -1,4 +1,4 @@
-FROM golang:1 AS builder
+FROM golang:1.13.1 AS builder
 
 RUN apt-get update && apt-get install -y upx
 
