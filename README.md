@@ -41,13 +41,13 @@ There are three methods of configuring the nextcloud-exporter (higher methods ta
 
 All settings can also be specified through environment variables:
 
-    Environment variable | Flag equivalent
------------------------: | :--------------
-NEXTCLOUD_LISTEN_ADDRESS | --addr
-NEXTCLOUD_PASSWORD       | --password
-NEXTCLOUD_TIMEOUT        | --timeout 
-NEXTCLOUD_SERVERINFO_URL | --url
-NEXTCLOUD_USERNAME       | --username
+|       Environment variable | Flag equivalent |
+| -------------------------: | :-------------- |
+| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
+| `NEXTCLOUD_PASSWORD`       | --password      |
+| `NEXTCLOUD_TIMEOUT`        | --timeout       |
+| `NEXTCLOUD_SERVERINFO_URL` | --url           |
+| `NEXTCLOUD_USERNAME`       | --username      |
 
 #### Configuration file
 
