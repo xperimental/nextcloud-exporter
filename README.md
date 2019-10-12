@@ -63,10 +63,10 @@ username: "example"
 
 ### Password file
 
-Optionally the password can be read from a separate file instead of directly from the input methods above. This can be achieved by setting the password to the path of the password file prefixed with an "@":
+Optionally the password can be read from a separate file instead of directly from the input methods above. This can be achieved by setting the password to the path of the password file prefixed with an "@", for example:
 
 ```bash
-$ nextcloud-exporter -c config.yml -p @/path/to/passwordfile
+$ nextcloud-exporter -c config-without-password.yml -p @/path/to/passwordfile
 ```
 
 ## Other information
