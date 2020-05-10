@@ -1,6 +1,6 @@
-FROM golang:1.13.1 AS builder
+FROM golang:1.13.10-alpine AS builder
 
-RUN apt-get update && apt-get install -y upx
+RUN apk add --no-cache ca-certificates upx
 
 WORKDIR /build
 
