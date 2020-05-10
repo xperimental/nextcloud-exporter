@@ -12,7 +12,7 @@ go get github.com/xperimental/nextcloud-exporter
 
 ## Client credentials
 
-To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user for that purpose.
+To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user and an [API token](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html) for that purpose.
 
 ## Usage
 
@@ -73,7 +73,7 @@ $ nextcloud-exporter -c config-without-password.yml -p @/path/to/passwordfile
 
 ### Info URL
 
-The exporter reads the metrics from the Nextcloud server using its "serverinfo" API. You can find the URL of this API in the administrator settings in the "Monitoring" section. It should look something like this:
+The exporter reads the metrics from the Nextcloud server using its [serverinfo API](https://github.com/nextcloud/serverinfo). You can find the URL of this API in the administrator settings in the "Monitoring" section. It should look something like this:
 
 ```plain
 https://example.com/ocs/v2.php/apps/serverinfo/api/v1/info
