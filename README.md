@@ -12,7 +12,7 @@ go get github.com/xperimental/nextcloud-exporter
 
 ## Client credentials
 
-To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user and an [API token](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html) for that purpose.
+To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user and an [app password](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html) for that purpose.
 
 ## Usage
 
