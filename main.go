@@ -18,6 +18,7 @@ var (
 )
 
 func main() {
+	log.SetFlags(0)
 	log.Printf("nextcloud-exporter %s", Version)
 
 	config, err := parseConfig()
