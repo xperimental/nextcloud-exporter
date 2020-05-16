@@ -67,12 +67,13 @@ type nextcloudCollector struct {
 	username           string
 	password           string
 	client             *http.Client
+	userAgent          string
 	upMetric           prometheus.Gauge
 	authErrorsMetric   prometheus.Counter
 	scrapeErrorsMetric prometheus.Counter
 }
 
-func newCollector(infoURL *url.URL, username, password string, timeout time.Duration) *nextcloudCollector {
+func newCollector(infoURL *url.URL, username, password string, timeout time.Duration, userAgent string) *nextcloudCollector {
 	return &nextcloudCollector{
 		infoURL:  infoURL,
 		username: username,
@@ -80,6 +81,7 @@ func newCollector(infoURL *url.URL, username, password string, timeout time.Dura
 		client: &http.Client{
 			Timeout: timeout,
 		},
+		userAgent: userAgent,
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: metricPrefix + "up",
 			Help: "Shows if nextcloud is deemed up by the collector.",
@@ -129,6 +131,7 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 	}
 
 	req.SetBasicAuth(c.username, c.password)
+	req.Header.Set("User-Agent", c.userAgent)
 
 	res, err := c.client.Do(req)
 	if err != nil {

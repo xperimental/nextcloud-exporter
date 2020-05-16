@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -25,7 +26,9 @@ func main() {
 	}
 
 	log.Printf("Nextcloud server: %s User: %s", config.InfoURL.Hostname(), config.Username)
-	collector := newCollector(config.InfoURL, config.Username, config.Password, config.Timeout)
+
+	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
+	collector := newCollector(config.InfoURL, config.Username, config.Password, config.Timeout, userAgent)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
