@@ -4,7 +4,7 @@ After=network.target nss-lookup.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/nextcloud-exporter -c /etc/nextcloud-exporter.yml
+ExecStart=/usr/bin/nextcloud-exporter -c /etc/nextcloud-exporter.yml
 User=nextcloud-exporter
 Group=nextcloud-exporter
 PrivateTmp=true
