@@ -1,3 +1,4 @@
 run.sh
 nextcloud-exporter
 config.yml
+dist/
