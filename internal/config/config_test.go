@@ -104,6 +104,23 @@ func TestConfig(t *testing.T) {
 			},
 		},
 		{
+			desc: "config and password from file",
+			args: []string{
+				"test",
+				"--config-file",
+				"testdata/passwordfile.yml",
+			},
+			env:     map[string]string{},
+			wantErr: nil,
+			wantConfig: Config{
+				ListenAddr: "127.0.0.10:9205",
+				Timeout:    10 * time.Second,
+				ServerURL:  "http://localhost",
+				Username:   "testuser",
+				Password:   "testpass",
+			},
+		},
+		{
 			desc: "env config",
 			args: []string{
 				"test",
