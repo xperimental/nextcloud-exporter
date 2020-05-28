@@ -48,7 +48,7 @@ func TestConfig(t *testing.T) {
 				"127.0.0.1:9205",
 				"--timeout",
 				"30s",
-				"--url",
+				"--server",
 				"http://localhost",
 				"--username",
 				"testuser",
@@ -60,7 +60,7 @@ func TestConfig(t *testing.T) {
 			wantConfig: Config{
 				ListenAddr: "127.0.0.1:9205",
 				Timeout:    30 * time.Second,
-				InfoURL:    mustURL("http://localhost/ocs/v2.php/apps/serverinfo/api/v1/info"),
+				ServerURL:  "http://localhost",
 				Username:   "testuser",
 				Password:   "testpass",
 			},
@@ -69,7 +69,7 @@ func TestConfig(t *testing.T) {
 			desc: "password from file",
 			args: []string{
 				"test",
-				"--url",
+				"--server",
 				"http://localhost",
 				"--username",
 				"testuser",
@@ -81,7 +81,7 @@ func TestConfig(t *testing.T) {
 			wantConfig: Config{
 				ListenAddr: defaults.ListenAddr,
 				Timeout:    defaults.Timeout,
-				InfoURL:    mustURL("http://localhost/ocs/v2.php/apps/serverinfo/api/v1/info"),
+				ServerURL:  "http://localhost",
 				Username:   "testuser",
 				Password:   "testpass",
 			},
@@ -98,7 +98,7 @@ func TestConfig(t *testing.T) {
 			wantConfig: Config{
 				ListenAddr: "127.0.0.10:9205",
 				Timeout:    10 * time.Second,
-				InfoURL:    mustURL("http://localhost/ocs/v2.php/apps/serverinfo/api/v1/info"),
+				ServerURL:  "http://localhost",
 				Username:   "testuser",
 				Password:   "testpass",
 			},
@@ -111,7 +111,7 @@ func TestConfig(t *testing.T) {
 			env: map[string]string{
 				envListenAddress: "127.0.0.11:9205",
 				envTimeout:       "15s",
-				envInfoURL:       "http://localhost",
+				envServerURL:     "http://localhost",
 				envUsername:      "testuser",
 				envPassword:      "testpass",
 			},
@@ -119,7 +119,7 @@ func TestConfig(t *testing.T) {
 			wantConfig: Config{
 				ListenAddr: "127.0.0.11:9205",
 				Timeout:    15 * time.Second,
-				InfoURL:    mustURL("http://localhost/ocs/v2.php/apps/serverinfo/api/v1/info"),
+				ServerURL:  "http://localhost",
 				Username:   "testuser",
 				Password:   "testpass",
 			},
@@ -130,15 +130,15 @@ func TestConfig(t *testing.T) {
 				"test",
 			},
 			env: map[string]string{
-				envInfoURL:  "http://localhost",
-				envUsername: "testuser",
-				envPassword: "testpass",
+				envServerURL: "http://localhost",
+				envUsername:  "testuser",
+				envPassword:  "testpass",
 			},
 			wantErr: nil,
 			wantConfig: Config{
 				ListenAddr: defaults.ListenAddr,
 				Timeout:    defaults.Timeout,
-				InfoURL:    mustURL("http://localhost/ocs/v2.php/apps/serverinfo/api/v1/info"),
+				ServerURL:  "http://localhost",
 				Username:   "testuser",
 				Password:   "testpass",
 			},
@@ -158,13 +158,13 @@ func TestConfig(t *testing.T) {
 				"test",
 			},
 			env:     map[string]string{},
-			wantErr: errors.New("need to set an info URL"),
+			wantErr: errors.New("need to set a server URL"),
 		},
 		{
 			desc: "no username",
 			args: []string{
 				"test",
-				"--url",
+				"--server",
 				"http://localhost",
 				"--password",
 				"testpass",
@@ -176,7 +176,7 @@ func TestConfig(t *testing.T) {
 			desc: "no password",
 			args: []string{
 				"test",
-				"--url",
+				"--server",
 				"http://localhost",
 				"--username",
 				"testuser",
@@ -198,7 +198,7 @@ func TestConfig(t *testing.T) {
 			desc: "password from file error",
 			args: []string{
 				"test",
-				"--url",
+				"--server",
 				"http://localhost",
 				"--password",
 				"@testdata/notfound",

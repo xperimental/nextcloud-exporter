@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/xperimental/nextcloud-exporter/internal/config"
+	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
 var (
@@ -27,10 +28,12 @@ func main() {
 		log.Fatalf("Error in configuration: %s", err)
 	}
 
-	log.Printf("Nextcloud server: %s User: %s", cfg.InfoURL.Hostname(), cfg.Username)
+	log.Printf("Nextcloud server: %s User: %s", cfg.ServerURL, cfg.Username)
+
+	infoURL := cfg.ServerURL + serverinfo.InfoPath
 
 	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
-	collector := newCollector(cfg.InfoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent)
+	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
