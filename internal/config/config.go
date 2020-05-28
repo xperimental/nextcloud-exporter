@@ -30,6 +30,23 @@ type Config struct {
 	Password   string        `yaml:"password"`
 }
 
+// Validate checks if the configuration contains all necessary parameters.
+func (c Config) Validate() error {
+	if len(c.ServerURL) == 0 {
+		return errors.New("need to set a server URL")
+	}
+
+	if len(c.Username) == 0 {
+		return errors.New("need to provide a username")
+	}
+
+	if len(c.Password) == 0 {
+		return errors.New("need to provide a password")
+	}
+
+	return nil
+}
+
 // Get loads the configuration. Flags, environment variables and configuration file are considered.
 func Get() (Config, error) {
 	return parseConfig(os.Args, os.Getenv)
@@ -64,18 +81,6 @@ func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 		}
 
 		result.Password = password
-	}
-
-	if len(result.ServerURL) == 0 {
-		return Config{}, errors.New("need to set a server URL")
-	}
-
-	if len(result.Username) == 0 {
-		return Config{}, errors.New("need to provide a username")
-	}
-
-	if len(result.Password) == 0 {
-		return Config{}, errors.New("need to provide a password")
 	}
 
 	return result, nil

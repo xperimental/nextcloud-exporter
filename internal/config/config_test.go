@@ -170,38 +170,6 @@ func TestConfig(t *testing.T) {
 			wantErr: errors.New("error parsing flags: unknown flag: --unknown"),
 		},
 		{
-			desc: "no url",
-			args: []string{
-				"test",
-			},
-			env:     map[string]string{},
-			wantErr: errors.New("need to set a server URL"),
-		},
-		{
-			desc: "no username",
-			args: []string{
-				"test",
-				"--server",
-				"http://localhost",
-				"--password",
-				"testpass",
-			},
-			env:     map[string]string{},
-			wantErr: errors.New("need to provide a username"),
-		},
-		{
-			desc: "no password",
-			args: []string{
-				"test",
-				"--server",
-				"http://localhost",
-				"--username",
-				"testuser",
-			},
-			env:     map[string]string{},
-			wantErr: errors.New("need to provide a password"),
-		},
-		{
 			desc: "env wrong duration",
 			args: []string{
 				"test",
@@ -252,6 +220,61 @@ func TestConfig(t *testing.T) {
 
 			if diff := cmp.Diff(config, tc.wantConfig); diff != "" {
 				t.Errorf("config differs: -got +want\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestConfigValidate(t *testing.T) {
+	tt := []struct {
+		desc    string
+		config  Config
+		wantErr error
+	}{
+		{
+			desc: "minimal",
+			config: Config{
+				ServerURL: "https://example.com",
+				Username:  "exporter",
+				Password:  "testpass",
+			},
+			wantErr: nil,
+		},
+		{
+			desc: "no url",
+			config: Config{
+				Username: "exporter",
+				Password: "testpass",
+			},
+			wantErr: errors.New("need to set a server URL"),
+		},
+		{
+			desc: "no username",
+			config: Config{
+				ServerURL: "https://example.com",
+				Password:  "testpass",
+			},
+			wantErr: errors.New("need to provide a username"),
+		},
+		{
+			desc: "no password",
+			config: Config{
+				ServerURL: "https://example.com",
+				Username:  "exporter",
+			},
+			wantErr: errors.New("need to provide a password"),
+		},
+	}
+
+	for _, tc := range tt {
+		tc := tc
+		t.Run(tc.desc, func(t *testing.T) {
+			t.Parallel()
+
+			err := tc.config.Validate()
+
+			if diff := cmp.Diff(err, tc.wantErr, compareErrors); diff != "" {
+				t.Errorf("error differs: -got +want\n%s", diff)
 			}
 		})
 	}

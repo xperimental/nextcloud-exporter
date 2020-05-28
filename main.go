@@ -25,7 +25,11 @@ func main() {
 
 	cfg, err := config.Get()
 	if err != nil {
-		log.Fatalf("Error in configuration: %s", err)
+		log.Fatalf("Error loading configuration: %s", err)
+	}
+
+	if err := cfg.Validate(); err != nil {
+		log.Fatalf("Invalid configuration: %s", err)
 	}
 
 	log.Printf("Nextcloud server: %s User: %s", cfg.ServerURL, cfg.Username)
