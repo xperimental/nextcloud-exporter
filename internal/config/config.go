@@ -43,11 +43,14 @@ type rawConfig struct {
 
 // Get loads the configuration. Flags, environment variables and configuration file are considered.
 func Get() (Config, error) {
-	return parseConfig()
+	return parseConfig(os.Args, os.Getenv)
 }
 
-func parseConfig() (Config, error) {
-	raw, configFile := loadConfigFromFlags()
+func parseConfig(args []string, envFunc func(string) string) (Config, error) {
+	raw, configFile, err := loadConfigFromFlags(args)
+	if err != nil {
+		return Config{}, err
+	}
 
 	if configFile != "" {
 		rawFile, err := loadConfigFromFile(configFile)
@@ -58,7 +61,7 @@ func parseConfig() (Config, error) {
 		raw = mergeConfig(raw, rawFile)
 	}
 
-	env, err := loadConfigFromEnv()
+	env, err := loadConfigFromEnv(envFunc)
 	if err != nil {
 		return Config{}, fmt.Errorf("error reading environment variables: %s", err)
 	}
@@ -91,17 +94,22 @@ func defaultConfig() Config {
 	}
 }
 
-func loadConfigFromFlags() (result rawConfig, configFile string) {
+func loadConfigFromFlags(args []string) (result rawConfig, configFile string, err error) {
 	defaults := defaultConfig()
-	pflag.StringVarP(&configFile, "config-file", "c", "", "Path to YAML configuration file.")
-	pflag.StringVarP(&result.ListenAddr, "addr", "a", defaults.ListenAddr, "Address to listen on for connections.")
-	pflag.DurationVarP(&result.Timeout, "timeout", "t", defaults.Timeout, "Timeout for getting server info document.")
-	pflag.StringVarP(&result.InfoURL, "url", "l", "", "URL to Nextcloud serverinfo page.")
-	pflag.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
-	pflag.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
-	pflag.Parse()
 
-	return result, configFile
+	flags := pflag.NewFlagSet(args[0], pflag.ContinueOnError)
+	flags.StringVarP(&configFile, "config-file", "c", "", "Path to YAML configuration file.")
+	flags.StringVarP(&result.ListenAddr, "addr", "a", defaults.ListenAddr, "Address to listen on for connections.")
+	flags.DurationVarP(&result.Timeout, "timeout", "t", defaults.Timeout, "Timeout for getting server info document.")
+	flags.StringVarP(&result.InfoURL, "url", "l", "", "URL to Nextcloud serverinfo page.")
+	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
+	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
+
+	if err := flags.Parse(args[1:]); err != nil {
+		return rawConfig{}, "", err
+	}
+
+	return result, configFile, nil
 }
 
 func convertConfig(raw rawConfig) (Config, error) {
@@ -149,15 +157,15 @@ func loadConfigFromFile(fileName string) (rawConfig, error) {
 	return result, nil
 }
 
-func loadConfigFromEnv() (rawConfig, error) {
+func loadConfigFromEnv(getEnv func(string) string) (rawConfig, error) {
 	result := rawConfig{
-		ListenAddr: os.Getenv(envListenAddress),
-		InfoURL:    os.Getenv(envInfoURL),
-		Username:   os.Getenv(envUsername),
-		Password:   os.Getenv(envPassword),
+		ListenAddr: getEnv(envListenAddress),
+		InfoURL:    getEnv(envInfoURL),
+		Username:   getEnv(envUsername),
+		Password:   getEnv(envPassword),
 	}
 
-	if raw, ok := os.LookupEnv(envTimeout); ok {
+	if raw := getEnv(envTimeout); raw != "" {
 		value, err := time.ParseDuration(raw)
 		if err != nil {
 			return rawConfig{}, err
