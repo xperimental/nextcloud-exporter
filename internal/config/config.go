@@ -47,6 +47,11 @@ func (c Config) Validate() error {
 	return nil
 }
 
+// LoginMode returns true when server URL and username are given but no password.
+func (c Config) LoginMode() bool {
+	return c.ServerURL != "" && c.Username != "" && c.Password == ""
+}
+
 // Get loads the configuration. Flags, environment variables and configuration file are considered.
 func Get() (Config, error) {
 	return parseConfig(os.Args, os.Getenv)

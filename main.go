@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/xperimental/nextcloud-exporter/internal/config"
+	"github.com/xperimental/nextcloud-exporter/internal/login"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
@@ -22,6 +23,7 @@ var (
 func main() {
 	log.SetFlags(0)
 	log.Printf("nextcloud-exporter %s", Version)
+	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
 
 	cfg, err := config.Get()
 	if err != nil {
@@ -29,6 +31,14 @@ func main() {
 	}
 
 	if err := cfg.Validate(); err != nil {
+		if cfg.LoginMode() {
+			log.Printf("Starting interactive login for %q on: %s", cfg.Username, cfg.ServerURL)
+			if err := login.StartInteractive(userAgent, cfg.ServerURL, cfg.Username); err != nil {
+				log.Fatalf("Error during login: %s", err)
+			}
+			return
+		}
+
 		log.Fatalf("Invalid configuration: %s", err)
 	}
 
@@ -36,7 +46,6 @@ func main() {
 
 	infoURL := cfg.ServerURL + serverinfo.InfoPath
 
-	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
 	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
