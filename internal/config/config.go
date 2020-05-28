@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"errors"
@@ -24,7 +24,8 @@ const (
 	envPassword      = envPrefix + "PASSWORD"
 )
 
-type config struct {
+// Config contains the configuration options for nextcloud-exporter.
+type Config struct {
 	ListenAddr string
 	Timeout    time.Duration
 	InfoURL    *url.URL
@@ -40,13 +41,18 @@ type rawConfig struct {
 	Password   string        `yaml:"password"`
 }
 
-func parseConfig() (config, error) {
+// Get loads the configuration. Flags, environment variables and configuration file are considered.
+func Get() (Config, error) {
+	return parseConfig()
+}
+
+func parseConfig() (Config, error) {
 	raw, configFile := loadConfigFromFlags()
 
 	if configFile != "" {
 		rawFile, err := loadConfigFromFile(configFile)
 		if err != nil {
-			return config{}, fmt.Errorf("error reading configuration file: %s", err)
+			return Config{}, fmt.Errorf("error reading configuration file: %s", err)
 		}
 
 		raw = mergeConfig(raw, rawFile)
@@ -54,32 +60,32 @@ func parseConfig() (config, error) {
 
 	env, err := loadConfigFromEnv()
 	if err != nil {
-		return config{}, fmt.Errorf("error reading environment variables: %s", err)
+		return Config{}, fmt.Errorf("error reading environment variables: %s", err)
 	}
 	raw = mergeConfig(raw, env)
 
 	if len(raw.InfoURL) == 0 {
-		return config{}, errors.New("need to set an info URL")
+		return Config{}, errors.New("need to set an info URL")
 	}
 
 	result, err := convertConfig(raw)
 	if err != nil {
-		return config{}, err
+		return Config{}, err
 	}
 
 	if len(result.Username) == 0 {
-		return config{}, errors.New("need to provide a username")
+		return Config{}, errors.New("need to provide a username")
 	}
 
 	if len(result.Password) == 0 {
-		return config{}, errors.New("need to provide a password")
+		return Config{}, errors.New("need to provide a password")
 	}
 
 	return result, nil
 }
 
-func defaultConfig() config {
-	return config{
+func defaultConfig() Config {
+	return Config{
 		ListenAddr: ":9205",
 		Timeout:    5 * time.Second,
 	}
@@ -98,8 +104,8 @@ func loadConfigFromFlags() (result rawConfig, configFile string) {
 	return result, configFile
 }
 
-func convertConfig(raw rawConfig) (config, error) {
-	result := config{
+func convertConfig(raw rawConfig) (Config, error) {
+	result := Config{
 		ListenAddr: raw.ListenAddr,
 		Timeout:    raw.Timeout,
 		Username:   raw.Username,
@@ -108,7 +114,7 @@ func convertConfig(raw rawConfig) (config, error) {
 
 	infoURL, err := url.Parse(raw.InfoURL)
 	if err != nil {
-		return config{}, fmt.Errorf("info URL is not valid: %s", err)
+		return Config{}, fmt.Errorf("info URL is not valid: %s", err)
 	}
 	result.InfoURL = infoURL
 
@@ -120,7 +126,7 @@ func convertConfig(raw rawConfig) (config, error) {
 		fileName := strings.TrimPrefix(result.Password, "@")
 		password, err := readPasswordFile(fileName)
 		if err != nil {
-			return config{}, fmt.Errorf("can not read password file: %s", err)
+			return Config{}, fmt.Errorf("can not read password file: %s", err)
 		}
 
 		result.Password = password

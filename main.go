@@ -7,6 +7,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/xperimental/nextcloud-exporter/internal/config"
 )
 
 var (
@@ -21,15 +22,15 @@ func main() {
 	log.SetFlags(0)
 	log.Printf("nextcloud-exporter %s", Version)
 
-	config, err := parseConfig()
+	cfg, err := config.Get()
 	if err != nil {
 		log.Fatalf("Error in configuration: %s", err)
 	}
 
-	log.Printf("Nextcloud server: %s User: %s", config.InfoURL.Hostname(), config.Username)
+	log.Printf("Nextcloud server: %s User: %s", cfg.InfoURL.Hostname(), cfg.Username)
 
 	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
-	collector := newCollector(config.InfoURL, config.Username, config.Password, config.Timeout, userAgent)
+	collector := newCollector(cfg.InfoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
@@ -50,6 +51,6 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
 
-	log.Printf("Listen on %s...", config.ListenAddr)
-	log.Fatal(http.ListenAndServe(config.ListenAddr, nil))
+	log.Printf("Listen on %s...", cfg.ListenAddr)
+	log.Fatal(http.ListenAndServe(cfg.ListenAddr, nil))
 }
