@@ -49,7 +49,7 @@ func Get() (Config, error) {
 func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 	raw, configFile, err := loadConfigFromFlags(args)
 	if err != nil {
-		return Config{}, err
+		return Config{}, fmt.Errorf("error parsing flags: %s", err)
 	}
 
 	if configFile != "" {
@@ -208,5 +208,5 @@ func readPasswordFile(fileName string) (string, error) {
 		return "", err
 	}
 
-	return string(bytes), nil
+	return strings.TrimSuffix(string(bytes), "\n"), nil
 }
