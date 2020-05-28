@@ -2,13 +2,13 @@
 
 GO ?= go
 GO_CMD := CGO_ENABLED=0 $(GO)
-VERSION := $(shell git describe --tags HEAD)
+VERSION := $(shell git describe --tags --broken)
 GIT_COMMIT := $(shell git rev-parse HEAD)
 
 all: test build-binary
 
 test:
-	$(GO_CMD) test ./...
+	$(GO_CMD) test -cover ./...
 
 build-binary:
 	$(GO_CMD) build -tags netgo -ldflags "-w -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT)" -o nextcloud-exporter .

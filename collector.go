@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -63,7 +62,7 @@ var (
 )
 
 type nextcloudCollector struct {
-	infoURL            *url.URL
+	infoURL            string
 	username           string
 	password           string
 	client             *http.Client
@@ -73,7 +72,7 @@ type nextcloudCollector struct {
 	scrapeErrorsMetric prometheus.Counter
 }
 
-func newCollector(infoURL *url.URL, username, password string, timeout time.Duration, userAgent string) *nextcloudCollector {
+func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string) *nextcloudCollector {
 	return &nextcloudCollector{
 		infoURL:  infoURL,
 		username: username,
@@ -125,7 +124,7 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 }
 
 func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error {
-	req, err := http.NewRequest(http.MethodGet, c.infoURL.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, c.infoURL, nil)
 	if err != nil {
 		return err
 	}

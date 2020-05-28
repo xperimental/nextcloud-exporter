@@ -2,6 +2,11 @@ package serverinfo
 
 import "encoding/xml"
 
+const (
+	// InfoPath contains the path to the serverinfo endpoint.
+	InfoPath = "/ocs/v2.php/apps/serverinfo/api/v1/info"
+)
+
 // ServerInfo contains the complete data received from the server.
 type ServerInfo struct {
 	Meta Meta `xml:"meta"`

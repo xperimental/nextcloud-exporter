@@ -18,13 +18,13 @@ To access the serverinfo API you will need the credentials of an admin user. It 
 
 ```plain
 $ nextcloud-exporter --help
-  Usage of nextcloud-exporter:
-    -a, --addr string          Address to listen on for connections. (default ":9205")
-    -c, --config-file string   Path to YAML configuration file.
-    -p, --password string      Password for connecting to Nextcloud.
-    -t, --timeout duration     Timeout for getting server info document. (default 5s)
-    -l, --url string           URL to Nextcloud serverinfo page.
-    -u, --username string      Username for connecting to Nextcloud.
+Usage of nextcloud-exporter:
+  -a, --addr string          Address to listen on for connections. (default ":9205")
+  -c, --config-file string   Path to YAML configuration file.
+  -p, --password string      Password for connecting to Nextcloud.
+  -s, --server string        URL to Nextcloud server.
+  -t, --timeout duration     Timeout for getting server info document. (default 5s)
+  -u, --username string      Username for connecting to Nextcloud.
 ```
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
@@ -41,13 +41,13 @@ There are three methods of configuring the nextcloud-exporter (higher methods ta
 
 All settings can also be specified through environment variables:
 
-|       Environment variable | Flag equivalent |
+|    Environment variable    | Flag equivalent |
 | -------------------------: | :-------------- |
 | `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
-| `NEXTCLOUD_PASSWORD`       | --password      |
-| `NEXTCLOUD_TIMEOUT`        | --timeout       |
-| `NEXTCLOUD_SERVERINFO_URL` | --url           |
-| `NEXTCLOUD_USERNAME`       | --username      |
+|       `NEXTCLOUD_PASSWORD` | --password      |
+|        `NEXTCLOUD_TIMEOUT` | --timeout       |
+|         `NEXTCLOUD_SERVER` | --server        |
+|       `NEXTCLOUD_USERNAME` | --username      |
 
 #### Configuration file
 
@@ -57,7 +57,7 @@ The `--config-file` option can be used to read the configuration options from a 
 listenAddress: ":9205"
 password: "example"
 timeout: "5s"
-infoUrl: "https://example.com"
+server: "https://example.com"
 username: "example"
 ```
 
@@ -66,7 +66,7 @@ username: "example"
 Optionally the password can be read from a separate file instead of directly from the input methods above. This can be achieved by setting the password to the path of the password file prefixed with an "@", for example:
 
 ```bash
-$ nextcloud-exporter -c config-without-password.yml -p @/path/to/passwordfile
+nextcloud-exporter -c config-without-password.yml -p @/path/to/passwordfile
 ```
 
 ## Other information
@@ -79,7 +79,7 @@ The exporter reads the metrics from the Nextcloud server using its "serverinfo" 
 https://example.com/ocs/v2.php/apps/serverinfo/api/v1/info
 ```
 
-When you do not specify a path on the `--url` parameter then the default path will be added automatically.
+The path will be automatically added to the server URL you provide, so in the above example setting `--server https://example.com` would be sufficient.
 
 If you open this URL in a browser you should see an XML structure with the information that will be used by the exporter.
 
