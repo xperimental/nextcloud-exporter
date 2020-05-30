@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/xperimental/nextcloud-exporter/internal/testutil"
 )
 
 func testEnv(env map[string]string) func(string) string {
@@ -23,13 +24,6 @@ func mustURL(raw string) *url.URL {
 
 	return u
 }
-
-var compareErrors = cmp.Comparer(func(a, b error) bool {
-	aE := a.Error()
-	bE := b.Error()
-
-	return aE == bE
-})
 
 func TestConfig(t *testing.T) {
 	defaults := defaultConfig()
@@ -210,7 +204,7 @@ func TestConfig(t *testing.T) {
 
 			config, err := parseConfig(tc.args, testEnv(tc.env))
 
-			if diff := cmp.Diff(err, tc.wantErr, compareErrors); diff != "" {
+			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
 				t.Errorf("error differs: -got +want\n%s", diff)
 			}
 
@@ -273,7 +267,7 @@ func TestConfigValidate(t *testing.T) {
 
 			err := tc.config.Validate()
 
-			if diff := cmp.Diff(err, tc.wantErr, compareErrors); diff != "" {
+			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
 				t.Errorf("error differs: -got +want\n%s", diff)
 			}
 		})

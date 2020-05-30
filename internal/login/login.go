@@ -45,7 +45,8 @@ type Client struct {
 	serverURL string
 	username  string
 
-	client *http.Client
+	client    *http.Client
+	sleepFunc func()
 }
 
 // Init creates a new LoginClient. The session can then be started using StartInteractive.
@@ -59,6 +60,7 @@ func Init(log logrus.FieldLogger, userAgent, serverURL, username string) *Client
 		client: &http.Client{
 			Timeout: 30 * time.Second,
 		},
+		sleepFunc: func() { time.Sleep(pollInterval) },
 	}
 }
 
@@ -151,7 +153,7 @@ func (c *Client) getLoginInfo() (loginInfo, error) {
 
 	var result loginInfo
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		return loginInfo{}, fmt.Errorf("error parsing login info: %s", err)
+		return loginInfo{}, fmt.Errorf("error decoding login info: %s", err)
 	}
 
 	return result, nil
@@ -162,7 +164,7 @@ func (c *Client) pollPassword(info pollInfo) (string, error) {
 	c.log.Debugf("poll endpoint: %s", info.Endpoint)
 
 	for {
-		time.Sleep(pollInterval)
+		c.sleepFunc()
 		reader := strings.NewReader(body)
 		res, err := c.doRequest(http.MethodPost, info.Endpoint, reader)
 		if err != nil {
