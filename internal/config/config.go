@@ -28,6 +28,7 @@ type Config struct {
 	ServerURL  string        `yaml:"server"`
 	Username   string        `yaml:"username"`
 	Password   string        `yaml:"password"`
+	Login      bool
 }
 
 // Validate checks if the configuration contains all necessary parameters.
@@ -45,11 +46,6 @@ func (c Config) Validate() error {
 	}
 
 	return nil
-}
-
-// LoginMode returns true when server URL and username are given but no password.
-func (c Config) LoginMode() bool {
-	return c.ServerURL != "" && c.Username != "" && c.Password == ""
 }
 
 // Get loads the configuration. Flags, environment variables and configuration file are considered.
@@ -108,6 +104,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.ServerURL, "server", "s", "", "URL to Nextcloud server.")
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
+	flags.BoolVar(&result.Login, "login", defaults.Login, "Use interactive login to create app password.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return Config{}, "", err

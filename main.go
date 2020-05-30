@@ -41,17 +41,20 @@ func main() {
 		log.Fatalf("Error loading configuration: %s", err)
 	}
 
-	if err := cfg.Validate(); err != nil {
-		if cfg.LoginMode() {
-			loginClient := login.Init(log, userAgent, cfg.ServerURL, cfg.Username)
-
-			log.Infof("Starting interactive login for %q on: %s", cfg.Username, cfg.ServerURL)
-			if err := loginClient.StartInteractive(); err != nil {
-				log.Fatalf("Error during login: %s", err)
-			}
-			return
+	if cfg.Login {
+		if cfg.ServerURL == "" {
+			log.Fatalf("Need to specify --server for login.")
 		}
+		loginClient := login.Init(log, userAgent, cfg.ServerURL)
 
+		log.Infof("Starting interactive login on: %s", cfg.ServerURL)
+		if err := loginClient.StartInteractive(); err != nil {
+			log.Fatalf("Error during login: %s", err)
+		}
+		return
+	}
+
+	if err := cfg.Validate(); err != nil {
 		log.Fatalf("Invalid configuration: %s", err)
 	}
 

@@ -85,7 +85,7 @@ func (c *Client) StartInteractive() error {
 		return fmt.Errorf("error getting login info: %s", err)
 	}
 	c.log.Infof("Please open this URL in a browser: %s", info.LoginURL)
-	c.log.Infoln("Waiting for login ...")
+	c.log.Infoln("Waiting for login ... (Ctrl-C to abort)")
 
 	login, err := c.pollLogin(info.PollInfo)
 	if err != nil {
