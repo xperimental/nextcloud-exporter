@@ -12,7 +12,23 @@ go get github.com/xperimental/nextcloud-exporter
 
 ## Client credentials
 
-To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user for that purpose.
+To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user for that purpose. It's also possible for the exporter to generate an "app password", so that the real user password is never saved to the configuration. This also makes the exporter show up in the security panel of the user as a connected application.
+
+To let the nextcloud-exporter create an app password, start it with the `--login` parameter:
+
+```bash
+nextcloud-exporter --login --server https://nextcloud.example.com
+```
+
+The exporter will generate a login URL that you need to open in your browser. Be sure to login with the correct user if you created a special user for the exporter as the app password will be bound to the logged-in user. Once the access has been granted using the browser the exporter will output the username and password that need to be entered into the configuration.
+
+The interactive login can also be done using a Docker container:
+
+```bash
+docker run --rm -it xperimental/nextcloud-exporter --login --server https://nextcloud.example.com
+```
+
+The login flow needs at least Nextcloud 16 to work.
 
 ## Usage
 
@@ -21,6 +37,7 @@ $ nextcloud-exporter --help
 Usage of nextcloud-exporter:
   -a, --addr string          Address to listen on for connections. (default ":9205")
   -c, --config-file string   Path to YAML configuration file.
+      --login                Use interactive login to create app password.
   -p, --password string      Password for connecting to Nextcloud.
   -s, --server string        URL to Nextcloud server.
   -t, --timeout duration     Timeout for getting server info document. (default 5s)
@@ -43,22 +60,24 @@ All settings can also be specified through environment variables:
 
 |    Environment variable    | Flag equivalent |
 | -------------------------: | :-------------- |
-| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
-|       `NEXTCLOUD_PASSWORD` | --password      |
-|        `NEXTCLOUD_TIMEOUT` | --timeout       |
 |         `NEXTCLOUD_SERVER` | --server        |
 |       `NEXTCLOUD_USERNAME` | --username      |
+|       `NEXTCLOUD_PASSWORD` | --password      |
+| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
+|        `NEXTCLOUD_TIMEOUT` | --timeout       |
 
 #### Configuration file
 
 The `--config-file` option can be used to read the configuration options from a YAML file:
 
 ```yaml
-listenAddress: ":9205"
-password: "example"
-timeout: "5s"
+# required
 server: "https://example.com"
 username: "example"
+password: "example"
+# optional
+listenAddress: ":9205"
+timeout: "5s"
 ```
 
 ### Password file

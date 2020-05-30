@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -110,7 +109,7 @@ func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 
 func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 	if err := c.collectNextcloud(ch); err != nil {
-		log.Printf("Error during scrape: %s", err)
+		log.Errorf("Error during scrape: %s", err)
 
 		c.scrapeErrorsMetric.Inc()
 		c.upMetric.Set(0)

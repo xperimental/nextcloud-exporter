@@ -28,6 +28,24 @@ type Config struct {
 	ServerURL  string        `yaml:"server"`
 	Username   string        `yaml:"username"`
 	Password   string        `yaml:"password"`
+	Login      bool
+}
+
+// Validate checks if the configuration contains all necessary parameters.
+func (c Config) Validate() error {
+	if len(c.ServerURL) == 0 {
+		return errors.New("need to set a server URL")
+	}
+
+	if len(c.Username) == 0 {
+		return errors.New("need to provide a username")
+	}
+
+	if len(c.Password) == 0 {
+		return errors.New("need to provide a password")
+	}
+
+	return nil
 }
 
 // Get loads the configuration. Flags, environment variables and configuration file are considered.
@@ -66,18 +84,6 @@ func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 		result.Password = password
 	}
 
-	if len(result.ServerURL) == 0 {
-		return Config{}, errors.New("need to set a server URL")
-	}
-
-	if len(result.Username) == 0 {
-		return Config{}, errors.New("need to provide a username")
-	}
-
-	if len(result.Password) == 0 {
-		return Config{}, errors.New("need to provide a password")
-	}
-
 	return result, nil
 }
 
@@ -98,6 +104,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.ServerURL, "server", "s", "", "URL to Nextcloud server.")
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
+	flags.BoolVar(&result.Login, "login", defaults.Login, "Use interactive login to create app password.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return Config{}, "", err
