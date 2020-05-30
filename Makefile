@@ -2,7 +2,7 @@
 
 GO ?= go
 GO_CMD := CGO_ENABLED=0 $(GO)
-VERSION := $(shell git describe --tags --broken)
+VERSION := $(shell git describe --tags --dirty)
 GIT_COMMIT := $(shell git rev-parse HEAD)
 
 all: test build-binary
