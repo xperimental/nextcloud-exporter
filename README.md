@@ -43,22 +43,24 @@ All settings can also be specified through environment variables:
 
 |    Environment variable    | Flag equivalent |
 | -------------------------: | :-------------- |
-| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
-|       `NEXTCLOUD_PASSWORD` | --password      |
-|        `NEXTCLOUD_TIMEOUT` | --timeout       |
 |         `NEXTCLOUD_SERVER` | --server        |
 |       `NEXTCLOUD_USERNAME` | --username      |
+|       `NEXTCLOUD_PASSWORD` | --password      |
+| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
+|        `NEXTCLOUD_TIMEOUT` | --timeout       |
 
 #### Configuration file
 
 The `--config-file` option can be used to read the configuration options from a YAML file:
 
 ```yaml
-listenAddress: ":9205"
-password: "example"
-timeout: "5s"
+# required
 server: "https://example.com"
 username: "example"
+password: "example"
+# optional
+listenAddress: ":9205"
+timeout: "5s"
 ```
 
 ### Password file
