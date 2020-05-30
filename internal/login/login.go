@@ -3,6 +3,7 @@ package login
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -89,9 +90,28 @@ func (c *Client) StartInteractive() error {
 	return nil
 }
 
+func (c *Client) doRequest(method, url string, body io.Reader) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, fmt.Errorf("can not create request: %s", err)
+	}
+	req.Header.Set("User-Agent", c.userAgent)
+
+	if body != nil {
+		req.Header.Set("Content-Type", contentType)
+	}
+
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error connecting: %s", err)
+	}
+
+	return res, nil
+}
+
 func (c *Client) getMajorVersion() (int, error) {
 	statusURL := c.serverURL + statusPath
-	res, err := c.client.Get(statusURL)
+	res, err := c.doRequest(http.MethodGet, statusURL, nil)
 	if err != nil {
 		return 0, fmt.Errorf("error connecting: %s", err)
 	}
@@ -119,13 +139,7 @@ func (c *Client) getMajorVersion() (int, error) {
 
 func (c *Client) getLoginInfo() (loginInfo, error) {
 	loginURL := c.serverURL + loginPath
-	req, err := http.NewRequest(http.MethodPost, loginURL, nil)
-	if err != nil {
-		return loginInfo{}, fmt.Errorf("can not create request: %s", err)
-	}
-	req.Header.Set("User-Agent", c.userAgent)
-
-	res, err := c.client.Do(req)
+	res, err := c.doRequest(http.MethodPost, loginURL, nil)
 	if err != nil {
 		return loginInfo{}, fmt.Errorf("error connecting: %s", err)
 	}
@@ -150,14 +164,7 @@ func (c *Client) pollPassword(info pollInfo) (string, error) {
 	for {
 		time.Sleep(pollInterval)
 		reader := strings.NewReader(body)
-		req, err := http.NewRequest(http.MethodPost, info.Endpoint, reader)
-		if err != nil {
-			return "", fmt.Errorf("can not create request: %s", err)
-		}
-		req.Header.Set("User-Agent", c.userAgent)
-		req.Header.Set("Content-Type", contentType)
-
-		res, err := c.client.Do(req)
+		res, err := c.doRequest(http.MethodPost, info.Endpoint, reader)
 		if err != nil {
 			continue
 		}
