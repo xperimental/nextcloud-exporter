@@ -3,11 +3,12 @@ package login
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -44,7 +45,7 @@ type passwordInfo struct {
 
 // StartInteractive starts an interactive login session for the Nextcloud server and user.
 // The end-result of this is an app-password for the exporter which should be used instead of a user password.
-func StartInteractive(userAgent, serverURL, username string) error {
+func StartInteractive(log logrus.FieldLogger, userAgent, serverURL, username string) error {
 	version, err := getMajorVersion(serverURL)
 	if err != nil {
 		return fmt.Errorf("error getting version: %s", err)
@@ -58,15 +59,15 @@ func StartInteractive(userAgent, serverURL, username string) error {
 	if err != nil {
 		return fmt.Errorf("error getting login info: %s", err)
 	}
-	log.Printf("Please open this URL in a browser: %s", info.LoginURL)
-	log.Println("Waiting for login ...")
+	log.Infof("Please open this URL in a browser: %s", info.LoginURL)
+	log.Infoln("Waiting for login ...")
 
-	password, err := pollPassword(userAgent, info.PollInfo)
+	password, err := pollPassword(log, userAgent, info.PollInfo)
 	if err != nil {
 		return fmt.Errorf("error during poll: %s", err)
 	}
 
-	log.Printf("Your app password is: %s", password)
+	log.Infof("Your app password is: %s", password)
 	return nil
 }
 
@@ -124,9 +125,9 @@ func getLoginInfo(userAgent, serverURL string) (loginInfo, error) {
 	return result, nil
 }
 
-func pollPassword(userAgent string, info pollInfo) (string, error) {
+func pollPassword(log logrus.FieldLogger, userAgent string, info pollInfo) (string, error) {
 	body := fmt.Sprintf("token=%s", info.Token)
-	log.Printf("poll endpoint: %s", info.Endpoint)
+	log.Debugf("poll endpoint: %s", info.Endpoint)
 
 	for {
 		time.Sleep(pollInterval)
@@ -145,7 +146,7 @@ func pollPassword(userAgent string, info pollInfo) (string, error) {
 		defer res.Body.Close()
 
 		if res.StatusCode != http.StatusOK {
-			log.Printf("status: %d", res.StatusCode)
+			log.Debugf("poll status: %d", res.StatusCode)
 			continue
 		}
 

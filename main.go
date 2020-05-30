@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/sirupsen/logrus"
 	"github.com/xperimental/nextcloud-exporter/internal/config"
 	"github.com/xperimental/nextcloud-exporter/internal/login"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
@@ -18,11 +19,21 @@ var (
 
 	// GitCommit contains the git commit hash set during the build.
 	GitCommit = ""
+
+	log = &logrus.Logger{
+		Out: os.Stderr,
+		Formatter: &logrus.TextFormatter{
+			DisableTimestamp: true,
+		},
+		Hooks:        make(logrus.LevelHooks),
+		Level:        logrus.InfoLevel,
+		ExitFunc:     os.Exit,
+		ReportCaller: false,
+	}
 )
 
 func main() {
-	log.SetFlags(0)
-	log.Printf("nextcloud-exporter %s", Version)
+	log.Infof("nextcloud-exporter %s", Version)
 	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
 
 	cfg, err := config.Get()
@@ -32,8 +43,8 @@ func main() {
 
 	if err := cfg.Validate(); err != nil {
 		if cfg.LoginMode() {
-			log.Printf("Starting interactive login for %q on: %s", cfg.Username, cfg.ServerURL)
-			if err := login.StartInteractive(userAgent, cfg.ServerURL, cfg.Username); err != nil {
+			log.Infof("Starting interactive login for %q on: %s", cfg.Username, cfg.ServerURL)
+			if err := login.StartInteractive(log, userAgent, cfg.ServerURL, cfg.Username); err != nil {
 				log.Fatalf("Error during login: %s", err)
 			}
 			return
@@ -42,7 +53,7 @@ func main() {
 		log.Fatalf("Invalid configuration: %s", err)
 	}
 
-	log.Printf("Nextcloud server: %s User: %s", cfg.ServerURL, cfg.Username)
+	log.Infof("Nextcloud server: %s User: %s", cfg.ServerURL, cfg.Username)
 
 	infoURL := cfg.ServerURL + serverinfo.InfoPath
 
@@ -67,6 +78,6 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
 
-	log.Printf("Listen on %s...", cfg.ListenAddr)
+	log.Infof("Listen on %s...", cfg.ListenAddr)
 	log.Fatal(http.ListenAndServe(cfg.ListenAddr, nil))
 }
