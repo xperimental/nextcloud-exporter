@@ -43,8 +43,10 @@ func main() {
 
 	if err := cfg.Validate(); err != nil {
 		if cfg.LoginMode() {
+			loginClient := login.Init(log, userAgent, cfg.ServerURL, cfg.Username)
+
 			log.Infof("Starting interactive login for %q on: %s", cfg.Username, cfg.ServerURL)
-			if err := login.StartInteractive(log, userAgent, cfg.ServerURL, cfg.Username); err != nil {
+			if err := loginClient.StartInteractive(); err != nil {
 				log.Fatalf("Error during login: %s", err)
 			}
 			return

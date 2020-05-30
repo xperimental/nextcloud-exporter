@@ -21,12 +21,6 @@ const (
 	contentType  = "application/x-www-form-urlencoded"
 )
 
-var (
-	client = &http.Client{
-		Timeout: 30 * time.Second,
-	}
-)
-
 type loginInfo struct {
 	LoginURL string   `json:"login"`
 	PollInfo pollInfo `json:"poll"`
@@ -43,10 +37,34 @@ type passwordInfo struct {
 	AppPassword string `json:"appPassword"`
 }
 
+// Client can be used to start an interactive login session with a Nextcloud server.
+type Client struct {
+	log       logrus.FieldLogger
+	userAgent string
+	serverURL string
+	username  string
+
+	client *http.Client
+}
+
+// Init creates a new LoginClient. The session can then be started using StartInteractive.
+func Init(log logrus.FieldLogger, userAgent, serverURL, username string) *Client {
+	return &Client{
+		log:       log,
+		userAgent: userAgent,
+		serverURL: serverURL,
+		username:  username,
+
+		client: &http.Client{
+			Timeout: 30 * time.Second,
+		},
+	}
+}
+
 // StartInteractive starts an interactive login session for the Nextcloud server and user.
 // The end-result of this is an app-password for the exporter which should be used instead of a user password.
-func StartInteractive(log logrus.FieldLogger, userAgent, serverURL, username string) error {
-	version, err := getMajorVersion(serverURL)
+func (c *Client) StartInteractive() error {
+	version, err := c.getMajorVersion()
 	if err != nil {
 		return fmt.Errorf("error getting version: %s", err)
 	}
@@ -55,25 +73,25 @@ func StartInteractive(log logrus.FieldLogger, userAgent, serverURL, username str
 		return fmt.Errorf("Nextcloud version too old for login: %d Minimum: %d", version, minimumMajorVersion)
 	}
 
-	info, err := getLoginInfo(userAgent, serverURL)
+	info, err := c.getLoginInfo()
 	if err != nil {
 		return fmt.Errorf("error getting login info: %s", err)
 	}
-	log.Infof("Please open this URL in a browser: %s", info.LoginURL)
-	log.Infoln("Waiting for login ...")
+	c.log.Infof("Please open this URL in a browser: %s", info.LoginURL)
+	c.log.Infoln("Waiting for login ...")
 
-	password, err := pollPassword(log, userAgent, info.PollInfo)
+	password, err := c.pollPassword(info.PollInfo)
 	if err != nil {
 		return fmt.Errorf("error during poll: %s", err)
 	}
 
-	log.Infof("Your app password is: %s", password)
+	c.log.Infof("Your app password is: %s", password)
 	return nil
 }
 
-func getMajorVersion(serverURL string) (int, error) {
-	statusURL := serverURL + statusPath
-	res, err := client.Get(statusURL)
+func (c *Client) getMajorVersion() (int, error) {
+	statusURL := c.serverURL + statusPath
+	res, err := c.client.Get(statusURL)
 	if err != nil {
 		return 0, fmt.Errorf("error connecting: %s", err)
 	}
@@ -99,15 +117,15 @@ func getMajorVersion(serverURL string) (int, error) {
 	return version, nil
 }
 
-func getLoginInfo(userAgent, serverURL string) (loginInfo, error) {
-	loginURL := serverURL + loginPath
+func (c *Client) getLoginInfo() (loginInfo, error) {
+	loginURL := c.serverURL + loginPath
 	req, err := http.NewRequest(http.MethodPost, loginURL, nil)
 	if err != nil {
 		return loginInfo{}, fmt.Errorf("can not create request: %s", err)
 	}
-	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("User-Agent", c.userAgent)
 
-	res, err := client.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return loginInfo{}, fmt.Errorf("error connecting: %s", err)
 	}
@@ -125,9 +143,9 @@ func getLoginInfo(userAgent, serverURL string) (loginInfo, error) {
 	return result, nil
 }
 
-func pollPassword(log logrus.FieldLogger, userAgent string, info pollInfo) (string, error) {
+func (c *Client) pollPassword(info pollInfo) (string, error) {
 	body := fmt.Sprintf("token=%s", info.Token)
-	log.Debugf("poll endpoint: %s", info.Endpoint)
+	c.log.Debugf("poll endpoint: %s", info.Endpoint)
 
 	for {
 		time.Sleep(pollInterval)
@@ -136,17 +154,17 @@ func pollPassword(log logrus.FieldLogger, userAgent string, info pollInfo) (stri
 		if err != nil {
 			return "", fmt.Errorf("can not create request: %s", err)
 		}
-		req.Header.Set("User-Agent", userAgent)
+		req.Header.Set("User-Agent", c.userAgent)
 		req.Header.Set("Content-Type", contentType)
 
-		res, err := client.Do(req)
+		res, err := c.client.Do(req)
 		if err != nil {
 			continue
 		}
 		defer res.Body.Close()
 
 		if res.StatusCode != http.StatusOK {
-			log.Debugf("poll status: %d", res.StatusCode)
+			c.log.Debugf("poll status: %d", res.StatusCode)
 			continue
 		}
 
