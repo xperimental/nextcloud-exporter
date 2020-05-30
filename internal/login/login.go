@@ -38,24 +38,28 @@ type passwordInfo struct {
 	AppPassword string `json:"appPassword"`
 }
 
+// Login contains the login information gathered during the login session.
+type Login struct {
+	Username string
+	Password string
+}
+
 // Client can be used to start an interactive login session with a Nextcloud server.
 type Client struct {
 	log       logrus.FieldLogger
 	userAgent string
 	serverURL string
-	username  string
 
 	client    *http.Client
 	sleepFunc func()
 }
 
 // Init creates a new LoginClient. The session can then be started using StartInteractive.
-func Init(log logrus.FieldLogger, userAgent, serverURL, username string) *Client {
+func Init(log logrus.FieldLogger, userAgent, serverURL string) *Client {
 	return &Client{
 		log:       log,
 		userAgent: userAgent,
 		serverURL: serverURL,
-		username:  username,
 
 		client: &http.Client{
 			Timeout: 30 * time.Second,
@@ -83,12 +87,13 @@ func (c *Client) StartInteractive() error {
 	c.log.Infof("Please open this URL in a browser: %s", info.LoginURL)
 	c.log.Infoln("Waiting for login ...")
 
-	password, err := c.pollPassword(info.PollInfo)
+	login, err := c.pollLogin(info.PollInfo)
 	if err != nil {
 		return fmt.Errorf("error during poll: %s", err)
 	}
 
-	c.log.Infof("Your app password is: %s", password)
+	c.log.Infof("Username: %s", login.Username)
+	c.log.Infof("Password: %s", login.Password)
 	return nil
 }
 
@@ -159,7 +164,7 @@ func (c *Client) getLoginInfo() (loginInfo, error) {
 	return result, nil
 }
 
-func (c *Client) pollPassword(info pollInfo) (string, error) {
+func (c *Client) pollLogin(info pollInfo) (Login, error) {
 	body := fmt.Sprintf("token=%s", info.Token)
 	c.log.Debugf("poll endpoint: %s", info.Endpoint)
 
@@ -179,9 +184,12 @@ func (c *Client) pollPassword(info pollInfo) (string, error) {
 
 		var password passwordInfo
 		if err := json.NewDecoder(res.Body).Decode(&password); err != nil {
-			return "", fmt.Errorf("error decoding password info: %s", err)
+			return Login{}, fmt.Errorf("error decoding password info: %s", err)
 		}
 
-		return password.AppPassword, nil
+		return Login{
+			Username: password.LoginName,
+			Password: password.AppPassword,
+		}, nil
 	}
 }

@@ -141,16 +141,19 @@ func TestGetLoginInfo(t *testing.T) {
 
 func TestPollPassword(t *testing.T) {
 	tt := []struct {
-		desc         string
-		testHandler  http.Handler
-		pollInfo     pollInfo
-		wantErr      error
-		wantPassword string
+		desc        string
+		testHandler http.Handler
+		pollInfo    pollInfo
+		wantErr     error
+		wantLogin   Login
 	}{
 		{
-			desc:         "success",
-			testHandler:  testHandler(http.StatusOK, `{"appPassword": "password"}`),
-			wantPassword: "password",
+			desc:        "success",
+			testHandler: testHandler(http.StatusOK, `{"loginName": "username", "appPassword": "password"}`),
+			wantLogin: Login{
+				Username: "username",
+				Password: "password",
+			},
 		},
 		{
 			desc:        "parse error",
@@ -169,7 +172,7 @@ func TestPollPassword(t *testing.T) {
 			tc.pollInfo.Endpoint = s.URL
 
 			c := testClient("")
-			password, err := c.pollPassword(tc.pollInfo)
+			login, err := c.pollLogin(tc.pollInfo)
 
 			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
 				t.Errorf("errors differ: -got +want\n%s", diff)
@@ -179,8 +182,8 @@ func TestPollPassword(t *testing.T) {
 				return
 			}
 
-			if password != tc.wantPassword {
-				t.Errorf("got password %q, want %q", password, tc.wantPassword)
+			if diff := cmp.Diff(login, tc.wantLogin); diff != "" {
+				t.Errorf("login differs: -got +want\n%s", diff)
 			}
 		})
 	}
