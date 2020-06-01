@@ -22,6 +22,12 @@ nextcloud-exporter --login --server https://nextcloud.example.com
 
 The exporter will generate a login URL that you need to open in your browser. Be sure to login with the correct user if you created a special user for the exporter as the app password will be bound to the logged-in user. Once the access has been granted using the browser the exporter will output the username and password that need to be entered into the configuration.
 
+When the login process is done, it is possible to disable filesystem access for the generated token in the user's settings:
+
+![Allow filesystem access checkbox](contrib/allow-filesystem.png)
+
+---
+
 The interactive login can also be done using a Docker container:
 
 ```bash
