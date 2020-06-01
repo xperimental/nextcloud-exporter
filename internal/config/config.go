@@ -29,6 +29,7 @@ type Config struct {
 	Username   string        `yaml:"username"`
 	Password   string        `yaml:"password"`
 	Login      bool
+	ShowHelp   bool
 }
 
 // Validate checks if the configuration contains all necessary parameters.
@@ -107,6 +108,12 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.BoolVar(&result.Login, "login", defaults.Login, "Use interactive login to create app password.")
 
 	if err := flags.Parse(args[1:]); err != nil {
+		if err == pflag.ErrHelp {
+			return Config{
+				ShowHelp: true,
+			}, "", nil
+		}
+
 		return Config{}, "", err
 	}
 

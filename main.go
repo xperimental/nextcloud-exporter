@@ -41,6 +41,10 @@ func main() {
 		log.Fatalf("Error loading configuration: %s", err)
 	}
 
+	if cfg.ShowHelp {
+		return
+	}
+
 	if cfg.Login {
 		if cfg.ServerURL == "" {
 			log.Fatalf("Need to specify --server for login.")
