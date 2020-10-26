@@ -171,7 +171,7 @@ func TestConfig(t *testing.T) {
 			env: map[string]string{
 				"NEXTCLOUD_TIMEOUT": "unknown",
 			},
-			wantErr: errors.New("error reading environment variables: time: invalid duration unknown"),
+			wantErr: errors.New("error reading environment variables: time: invalid duration \"unknown\""),
 		},
 		{
 			desc: "password from file error",
