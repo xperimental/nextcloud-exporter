@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -34,6 +35,10 @@ var (
 		metricPrefix+"shares_total",
 		"Number of shares by type.",
 		[]string{"type"}, nil)
+	cpuLoadsDesc = prometheus.NewDesc(
+		metricPrefix+"cpu_load",
+		"CPU Load",
+		[]string{"index"}, nil)
 	federationsDesc = prometheus.NewDesc(
 		metricPrefix+"shares_federated_total",
 		"Number of federated shares by direction.",
@@ -161,6 +166,10 @@ func readMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerInfo) erro
 		return err
 	}
 
+	if err := collectCPULoads(ch, status.Data.Nextcloud.System.CPULoad); err != nil {
+		return err
+	}
+
 	if err := collectFederatedShares(ch, status.Data.Nextcloud.Shares); err != nil {
 		return err
 	}
@@ -237,6 +246,10 @@ func collectShares(ch chan<- prometheus.Metric, shares serverinfo.Shares) error 
 	return collectMap(ch, sharesDesc, values)
 }
 
+func collectCPULoads(ch chan<- prometheus.Metric, cpuLoad serverinfo.CPULoad) error {
+	return collectArray(ch, cpuLoadsDesc, cpuLoad.Element)
+}
+
 func collectFederatedShares(ch chan<- prometheus.Metric, shares serverinfo.Shares) error {
 	values := make(map[string]float64)
 	values["sent"] = float64(shares.FedSent)
@@ -250,6 +263,17 @@ func collectMap(ch chan<- prometheus.Metric, desc *prometheus.Desc, labelValueMa
 		metric, err := prometheus.NewConstMetric(desc, prometheus.GaugeValue, v, k)
 		if err != nil {
 			return fmt.Errorf("error creating shares metric for %s: %s", k, err)
+		}
+		ch <- metric
+	}
+
+	return nil
+}
+func collectArray(ch chan<- prometheus.Metric, desc *prometheus.Desc, values []float64) error {
+	for i, v := range values {
+		metric, err := prometheus.NewConstMetric(desc, prometheus.GaugeValue, v, strconv.Itoa(i))
+		if err != nil {
+			return fmt.Errorf("error creating cpu load metric for index %d: %s", i, err)
 		}
 		ch <- metric
 	}

@@ -36,16 +36,17 @@ type Nextcloud struct {
 
 // System contains nextcloud configuration and system information.
 type System struct {
-	Version             string `xml:"version"`
-	Theme               string `xml:"theme"`
-	EnableAvatars       bool   `xml:"enable_avatars"`
-	EnablePreviews      bool   `xml:"enable_previews"`
-	MemcacheLocal       string `xml:"memcache.local"`
-	MemcacheDistributed string `xml:"memcache.distributed"`
-	MemcacheLocking     string `xml:"memcache.locking"`
-	FilelockingEnabled  bool   `xml:"filelocking.enabled"`
-	Debug               bool   `xml:"debug"`
-	FreeSpace           int64  `xml:"freespace"`
+	Version             string  `xml:"version"`
+	Theme               string  `xml:"theme"`
+	EnableAvatars       bool    `xml:"enable_avatars"`
+	EnablePreviews      bool    `xml:"enable_previews"`
+	MemcacheLocal       string  `xml:"memcache.local"`
+	MemcacheDistributed string  `xml:"memcache.distributed"`
+	MemcacheLocking     string  `xml:"memcache.locking"`
+	FilelockingEnabled  bool    `xml:"filelocking.enabled"`
+	Debug               bool    `xml:"debug"`
+	FreeSpace           int64   `xml:"freespace"`
+	CPULoad             CPULoad `xml:"cpuload.element"`
 	// <cpuload>
 }
 
@@ -53,16 +54,17 @@ const boolYes = "yes"
 
 func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var raw struct {
-		Version             string `xml:"version"`
-		Theme               string `xml:"theme"`
-		EnableAvatars       string `xml:"enable_avatars"`
-		EnablePreviews      string `xml:"enable_previews"`
-		MemcacheLocal       string `xml:"memcache.local"`
-		MemcacheDistributed string `xml:"memcache.distributed"`
-		MemcacheLocking     string `xml:"memcache.locking"`
-		FilelockingEnabled  string `xml:"filelocking.enabled"`
-		Debug               string `xml:"debug"`
-		FreeSpace           int64  `xml:"freespace"`
+		Version             string  `xml:"version"`
+		Theme               string  `xml:"theme"`
+		EnableAvatars       string  `xml:"enable_avatars"`
+		EnablePreviews      string  `xml:"enable_previews"`
+		MemcacheLocal       string  `xml:"memcache.local"`
+		MemcacheDistributed string  `xml:"memcache.distributed"`
+		MemcacheLocking     string  `xml:"memcache.locking"`
+		FilelockingEnabled  string  `xml:"filelocking.enabled"`
+		Debug               string  `xml:"debug"`
+		FreeSpace           int64   `xml:"freespace"`
+		CPULoad             CPULoad `xml:"cpuload"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -77,7 +79,12 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	s.FilelockingEnabled = raw.FilelockingEnabled == boolYes
 	s.Debug = raw.Debug == boolYes
 	s.FreeSpace = raw.FreeSpace
+	s.CPULoad = raw.CPULoad
 	return nil
+}
+
+type CPULoad struct {
+	Element []float64 `xml:"element"`
 }
 
 // Storage contains information about the nextcloud storage system.
