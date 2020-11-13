@@ -46,8 +46,7 @@ type System struct {
 	FilelockingEnabled  bool    `xml:"filelocking.enabled"`
 	Debug               bool    `xml:"debug"`
 	FreeSpace           int64   `xml:"freespace"`
-	CPULoad             CPULoad `xml:"cpuload.element"`
-	// <cpuload>
+	CPULoad             CPULoad `xml:"cpuload"`
 }
 
 const boolYes = "yes"
