@@ -24,6 +24,9 @@ install:
 	install -D -t $(DESTDIR)/usr/bin/ nextcloud-exporter
 	install -D -m 0644 -t $(DESTDIR)/lib/systemd/system/ contrib/nextcloud-exporter.service
 
+image:
+	docker build -t "xperimental/nextcloud-exporter:$(VERSION)" .
+
 clean:
 	rm -f nextcloud-exporter
 	rm -r dist
