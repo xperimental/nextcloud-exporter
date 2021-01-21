@@ -18,6 +18,14 @@ var (
 		metricPrefix+"system_info",
 		"Contains meta information about Nextcloud as labels. Value is always 1.",
 		[]string{"version"}, nil)
+	appsInstalledDesc = prometheus.NewDesc(
+		metricPrefix+"apps_installed_total",
+		"Number of currently installed apps",
+		nil, nil)
+	appsUpdatesDesc = prometheus.NewDesc(
+		metricPrefix+"apps_updates_available_total",
+		"Number of apps that have available updates",
+		nil, nil)
 	usersDesc = prometheus.NewDesc(
 		metricPrefix+"users_total",
 		"Number of users of the instance.",
@@ -187,6 +195,14 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerI
 		desc  *prometheus.Desc
 		value float64
 	}{
+		{
+			desc:  appsInstalledDesc,
+			value: float64(status.Data.Nextcloud.System.Apps.Installed),
+		},
+		{
+			desc:  appsUpdatesDesc,
+			value: float64(status.Data.Nextcloud.System.Apps.AvailableUpdates),
+		},
 		{
 			desc:  usersDesc,
 			value: float64(status.Data.Nextcloud.Storage.Users),

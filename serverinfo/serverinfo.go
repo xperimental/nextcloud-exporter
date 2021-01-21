@@ -46,7 +46,7 @@ type System struct {
 	FilelockingEnabled  bool   `xml:"filelocking.enabled"`
 	Debug               bool   `xml:"debug"`
 	FreeSpace           int64  `xml:"freespace"`
-	// <cpuload>
+	Apps                Apps   `xml:"apps"`
 }
 
 const boolYes = "yes"
@@ -63,6 +63,7 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		FilelockingEnabled  string `xml:"filelocking.enabled"`
 		Debug               string `xml:"debug"`
 		FreeSpace           int64  `xml:"freespace"`
+		Apps                Apps   `xml:"apps"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -77,7 +78,14 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	s.FilelockingEnabled = raw.FilelockingEnabled == boolYes
 	s.Debug = raw.Debug == boolYes
 	s.FreeSpace = raw.FreeSpace
+	s.Apps = raw.Apps
 	return nil
+}
+
+// Apps contains information about installed apps and updates.
+type Apps struct {
+	Installed        uint `xml:"num_installed"`
+	AvailableUpdates uint `xml:"num_updates_available"`
 }
 
 // Storage contains information about the nextcloud storage system.
