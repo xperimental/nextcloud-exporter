@@ -15,7 +15,7 @@ jobs:
         id: prep
         run: |
           TAGS=""
-          IMAGE="timtor/nextcloud-exporter"
+          IMAGE="xperimental/nextcloud-exporter"
 
           if [[ "$GITHUB_REF" == refs/heads/master ]]; then
             TAGS="$IMAGE:master"
