@@ -155,6 +155,18 @@ func TestConfig(t *testing.T) {
 			},
 		},
 		{
+			desc: "show help",
+			args: []string{
+				"test",
+				"--help",
+			},
+			env:     map[string]string{},
+			wantErr: nil,
+			wantConfig: Config{
+				ShowHelp: true,
+			},
+		},
+		{
 			desc: "wrongflag",
 			args: []string{
 				"test",
