@@ -163,7 +163,24 @@ func TestConfig(t *testing.T) {
 			env:     map[string]string{},
 			wantErr: nil,
 			wantConfig: Config{
-				ShowHelp: true,
+				RunMode: RunModeHelp,
+			},
+		},
+		{
+			desc: "login mode",
+			args: []string{
+				"test",
+				"--login",
+				"--server",
+				"http://localhost",
+			},
+			env:     map[string]string{},
+			wantErr: nil,
+			wantConfig: Config{
+				ListenAddr: defaults.ListenAddr,
+				Timeout:    defaults.Timeout,
+				ServerURL:  "http://localhost",
+				RunMode:    RunModeLogin,
 			},
 		},
 		{

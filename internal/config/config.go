@@ -21,6 +21,31 @@ const (
 	envPassword      = envPrefix + "PASSWORD"
 )
 
+// RunMode signals what the main application should do after parsing the options.
+type RunMode int
+
+const (
+	// RunModeExporter is the normal operation as an exporter serving metrics via HTTP.
+	RunModeExporter RunMode = iota
+	// RunModeHelp shows information about available options.
+	RunModeHelp
+	// RunModeLogin is used to interactively login to a Nextcloud instance.
+	RunModeLogin
+)
+
+func (m RunMode) String() string {
+	switch m {
+	case RunModeExporter:
+		return "exporter"
+	case RunModeHelp:
+		return "help"
+	case RunModeLogin:
+		return "login"
+	default:
+		return "error"
+	}
+}
+
 // Config contains the configuration options for nextcloud-exporter.
 type Config struct {
 	ListenAddr string        `yaml:"listenAddress"`
@@ -28,8 +53,7 @@ type Config struct {
 	ServerURL  string        `yaml:"server"`
 	Username   string        `yaml:"username"`
 	Password   string        `yaml:"password"`
-	Login      bool
-	ShowHelp   bool
+	RunMode    RunMode
 }
 
 // Validate checks if the configuration contains all necessary parameters.
@@ -105,16 +129,20 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.ServerURL, "server", "s", "", "URL to Nextcloud server.")
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
-	flags.BoolVar(&result.Login, "login", defaults.Login, "Use interactive login to create app password.")
+	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		if err == pflag.ErrHelp {
 			return Config{
-				ShowHelp: true,
+				RunMode: RunModeHelp,
 			}, "", nil
 		}
 
 		return Config{}, "", err
+	}
+
+	if *modeLogin {
+		result.RunMode = RunModeLogin
 	}
 
 	return result, configFile, nil
