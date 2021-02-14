@@ -31,6 +31,8 @@ const (
 	RunModeHelp
 	// RunModeLogin is used to interactively login to a Nextcloud instance.
 	RunModeLogin
+	// RunModeVersion shows version information.
+	RunModeVersion
 )
 
 func (m RunMode) String() string {
@@ -41,6 +43,8 @@ func (m RunMode) String() string {
 		return "help"
 	case RunModeLogin:
 		return "login"
+	case RunModeVersion:
+		return "version"
 	default:
 		return "error"
 	}
@@ -130,6 +134,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
+	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		if err == pflag.ErrHelp {
@@ -139,6 +144,12 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 		}
 
 		return Config{}, "", err
+	}
+
+	if *modeVersion {
+		return Config{
+			RunMode: RunModeVersion,
+		}, "", nil
 	}
 
 	if *modeLogin {

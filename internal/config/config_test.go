@@ -167,6 +167,18 @@ func TestConfig(t *testing.T) {
 			},
 		},
 		{
+			desc: "show version",
+			args: []string{
+				"test",
+				"--version",
+			},
+			env:     map[string]string{},
+			wantErr: nil,
+			wantConfig: Config{
+				RunMode: RunModeVersion,
+			},
+		},
+		{
 			desc: "login mode",
 			args: []string{
 				"test",

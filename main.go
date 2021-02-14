@@ -42,6 +42,11 @@ func main() {
 		return
 	}
 
+	if cfg.RunMode == config.RunModeVersion {
+		fmt.Println(Version)
+		return
+	}
+
 	log.Infof("nextcloud-exporter %s", Version)
 	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
 
