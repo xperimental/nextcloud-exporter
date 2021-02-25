@@ -33,19 +33,24 @@ var (
 )
 
 func main() {
-	log.Infof("nextcloud-exporter %s", Version)
-	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
-
 	cfg, err := config.Get()
 	if err != nil {
 		log.Fatalf("Error loading configuration: %s", err)
 	}
 
-	if cfg.ShowHelp {
+	if cfg.RunMode == config.RunModeHelp {
 		return
 	}
 
-	if cfg.Login {
+	if cfg.RunMode == config.RunModeVersion {
+		fmt.Println(Version)
+		return
+	}
+
+	log.Infof("nextcloud-exporter %s", Version)
+	userAgent := fmt.Sprintf("nextcloud-exporter/%s", Version)
+
+	if cfg.RunMode == config.RunModeLogin {
 		if cfg.ServerURL == "" {
 			log.Fatalf("Need to specify --server for login.")
 		}
