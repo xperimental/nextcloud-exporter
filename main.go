@@ -71,7 +71,11 @@ func main() {
 
 	infoURL := cfg.ServerURL + serverinfo.InfoPath
 
-	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent)
+	if cfg.TLSSkipVerify {
+		log.Warnf("HTTPS certificate verification is DISABLED.")
+	}
+
+	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
