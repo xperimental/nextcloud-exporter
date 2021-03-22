@@ -72,7 +72,7 @@ func main() {
 	infoURL := cfg.ServerURL + serverinfo.InfoPath
 
 	if cfg.TLSSkipVerify {
-		log.Warnf("HTTPS certificate verification is DISABLED.")
+		log.Warn("HTTPS certificate verification is disabled.")
 	}
 
 	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify)

@@ -41,14 +41,15 @@ The login flow needs at least Nextcloud 16 to work.
 ```plain
 $ nextcloud-exporter --help
 Usage of nextcloud-exporter:
-  -a, --addr string            Address to listen on for connections. (default ":9205")
-  -c, --config-file string     Path to YAML configuration file.
-      --login                  Use interactive login to create app password.
-  -p, --password string        Password for connecting to Nextcloud.
-  -s, --server string          URL to Nextcloud server.
-  -t, --timeout duration       Timeout for getting server info document. (default 5s)
-  -u, --username string        Username for connecting to Nextcloud.
-  --tls-skip-verify boolean    Disables checking HTTPS certificates of Nextcloud.
+  -a, --addr string          Address to listen on for connections. (default ":9205")
+  -c, --config-file string   Path to YAML configuration file.
+      --login                Use interactive login to create app password.
+  -p, --password string      Password for connecting to Nextcloud.
+  -s, --server string        URL to Nextcloud server.
+  -t, --timeout duration     Timeout for getting server info document. (default 5s)
+      --tls-skip-verify      Skip certificate verification of Nextcloud server.
+  -u, --username string      Username for connecting to Nextcloud.
+  -V, --version              Show version information and exit.
 ```
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
@@ -65,14 +66,14 @@ There are three methods of configuring the nextcloud-exporter (higher methods ta
 
 All settings can also be specified through environment variables:
 
-|    Environment variable    | Flag equivalent |
-| -------------------------: | :-------------- |
-|         `NEXTCLOUD_SERVER` | --server        |
-|       `NEXTCLOUD_USERNAME` | --username      |
-|       `NEXTCLOUD_PASSWORD` | --password      |
-| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
-|        `NEXTCLOUD_TIMEOUT` | --timeout       |
-|  `NEXTCLOUD_TLS_NO_VERIFY` | --tls-no-verify |
+|     Environment variable    | Flag equivalent   |
+| --------------------------: | :---------------- |
+|          `NEXTCLOUD_SERVER` | --server          |
+|        `NEXTCLOUD_USERNAME` | --username        |
+|        `NEXTCLOUD_PASSWORD` | --password        |
+|  `NEXTCLOUD_LISTEN_ADDRESS` | --addr            |
+|         `NEXTCLOUD_TIMEOUT` | --timeout         |
+| `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify |
 
 #### Configuration file
 
@@ -86,7 +87,7 @@ password: "example"
 # optional
 listenAddress: ":9205"
 timeout: "5s"
-tlsNoVerify: false
+tlsSkipVerify: false
 ```
 
 ### Password file
