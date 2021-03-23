@@ -124,8 +124,6 @@ scrape_configs:
 
 This are the metrics exported by the `nextcloud-exporter`
 
-| name | description |
-
 | name                                   | description                                                            |
 |----------------------------------------|------------------------------------------------------------------------|
 | nextcloud_active_users_total           | Number of active users for the last five minutes                       |
@@ -140,8 +138,8 @@ This are the metrics exported by the `nextcloud-exporter`
 | nextcloud_php_memory_limit_bytes       | Configured PHP memory limit in bytes                                   |
 | nextcloud_php_upload_max_size_bytes    | Configured maximum upload size in bytes                                |
 | nextcloud_scrape_errors_total          | Number of scrape errors from this collector                            |
-| nextcloud_shares_federated_total       | Number of federated shares                                             |
-| nextcloud_shares_total                 | Number of shares by type `authlink`, `group`, `link`, `user`           |
+| nextcloud_shares_federated_total       | Number of federated shares by directions `sent` / `received`           |
+| nextcloud_shares_total                 | Number of shares by type: <br> `authlink`: shared password protected links <br> `group`: shared groups <br>`link`: all shared links <br> `user`: shared users |
 | nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1 |
 | nextcloud_up                           | Shows if nextcloud instance is up `0` down / `1` up                    |
 | nextcloud_users_total                  | Number of users of the instance                                        |
