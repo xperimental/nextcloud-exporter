@@ -119,3 +119,29 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9205']
 ```
+
+### Exported metrics
+
+This are the metrics exported by the `nextcloud-exporter`
+
+| name | description |
+
+| name                                   | description                                                            |
+|----------------------------------------|------------------------------------------------------------------------|
+| nextcloud_active_users_total           | Number of active users for the last five minutes                       |
+| nextcloud_apps_installed_total         | Number of currently installed apps                                     |
+| nextcloud_apps_updates_available_total | Number of apps that have available updates                             |
+| nextcloud_auth_errors_total            | Counts number of authentication errors encountered by the collector    |
+| nextcloud_database_size_bytes          | Size of database in bytes as reported from engine                      |
+| nextcloud_exporter_info                | Contains meta informatoin of the exporter. Value is always 1           |
+| nextcloud_files_total                  | Number of files served by the instance                                 |
+| nextcloud_free_space_bytes             | Number of available disk space on the instance in bytes                |
+| nextcloud_php_info                     | Contains meta information about PHP as labels. Value is always 1       |
+| nextcloud_php_memory_limit_bytes       | Configured PHP memory limit in bytes                                   |
+| nextcloud_php_upload_max_size_bytes    | Configured maximum upload size in bytes                                |
+| nextcloud_scrape_errors_total          | Number of scrape errors from this collector                            |
+| nextcloud_shares_federated_total       | Number of federated shares                                             |
+| nextcloud_shares_total                 | Number of shares by type `authlink`, `group`, `link`, `user`           |
+| nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1 |
+| nextcloud_up                           | Shows if nextcloud instance is up `0` down / `1` up                    |
+| nextcloud_users_total                  | Number of users of the instance                                        |
