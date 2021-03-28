@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"strconv"
 	"time"
 
 	"github.com/spf13/pflag"
@@ -177,12 +178,21 @@ func loadConfigFromFile(fileName string) (Config, error) {
 }
 
 func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
+	tlsSkipVerify := false
+	if rawValue := getEnv(envTLSSkipVerify); rawValue != "" {
+		value, err := strconv.ParseBool(rawValue)
+		if err != nil {
+			return Config{}, fmt.Errorf("can not parse value for %q: %s", envTLSSkipVerify, rawValue)
+		}
+		tlsSkipVerify = value
+	}
+
 	result := Config{
 		ListenAddr:    getEnv(envListenAddress),
 		ServerURL:     getEnv(envServerURL),
 		Username:      getEnv(envUsername),
 		Password:      getEnv(envPassword),
-		TLSSkipVerify: strings.ToLower(getEnv(envTLSSkipVerify)) == "true",
+		TLSSkipVerify: tlsSkipVerify,
 	}
 
 	if raw := getEnv(envTimeout); raw != "" {

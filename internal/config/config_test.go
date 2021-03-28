@@ -147,7 +147,7 @@ func TestConfig(t *testing.T) {
 				envServerURL:     "http://localhost",
 				envUsername:      "testuser",
 				envPassword:      "testpass",
-				envTLSSkipVerify: "TruE",
+				envTLSSkipVerify: "TRUE",
 			},
 			wantErr: nil,
 			wantConfig: Config{
