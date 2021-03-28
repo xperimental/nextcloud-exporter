@@ -122,7 +122,7 @@ scrape_configs:
 
 ### Exported metrics
 
-This are the metrics exported by the `nextcloud-exporter`
+These metrics are exported by `nextcloud-exporter`:
 
 | name                                   | description                                                            |
 |----------------------------------------|------------------------------------------------------------------------|
