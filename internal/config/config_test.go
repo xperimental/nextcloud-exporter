@@ -147,7 +147,7 @@ func TestConfig(t *testing.T) {
 				envServerURL:     "http://localhost",
 				envUsername:      "testuser",
 				envPassword:      "testpass",
-				envTLSSkipVerify: "TRUE",
+				envTLSSkipVerify: "true",
 			},
 			wantErr: nil,
 			wantConfig: Config{
@@ -260,6 +260,16 @@ func TestConfig(t *testing.T) {
 			},
 			env:     map[string]string{},
 			wantErr: errors.New("error reading configuration file: open testdata/notfound.yml: no such file or directory"),
+		},
+		{
+			desc: "fail parsing tlsSkipVerify env",
+			args: []string{
+				"test",
+			},
+			env: map[string]string{
+				envTLSSkipVerify: "invalid",
+			},
+			wantErr: errors.New(`error reading environment variables: can not parse value for "NEXTCLOUD_TLS_SKIP_VERIFY": invalid`),
 		},
 	}
 
