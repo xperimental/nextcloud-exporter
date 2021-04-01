@@ -47,7 +47,9 @@ Usage of nextcloud-exporter:
   -p, --password string      Password for connecting to Nextcloud.
   -s, --server string        URL to Nextcloud server.
   -t, --timeout duration     Timeout for getting server info document. (default 5s)
+      --tls-skip-verify      Skip certificate verification of Nextcloud server.
   -u, --username string      Username for connecting to Nextcloud.
+  -V, --version              Show version information and exit.
 ```
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
@@ -64,13 +66,14 @@ There are three methods of configuring the nextcloud-exporter (higher methods ta
 
 All settings can also be specified through environment variables:
 
-|    Environment variable    | Flag equivalent |
-| -------------------------: | :-------------- |
-|         `NEXTCLOUD_SERVER` | --server        |
-|       `NEXTCLOUD_USERNAME` | --username      |
-|       `NEXTCLOUD_PASSWORD` | --password      |
-| `NEXTCLOUD_LISTEN_ADDRESS` | --addr          |
-|        `NEXTCLOUD_TIMEOUT` | --timeout       |
+|     Environment variable    | Flag equivalent   |
+| --------------------------: | :---------------- |
+|          `NEXTCLOUD_SERVER` | --server          |
+|        `NEXTCLOUD_USERNAME` | --username        |
+|        `NEXTCLOUD_PASSWORD` | --password        |
+|  `NEXTCLOUD_LISTEN_ADDRESS` | --addr            |
+|         `NEXTCLOUD_TIMEOUT` | --timeout         |
+| `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify |
 
 #### Configuration file
 
@@ -84,6 +87,7 @@ password: "example"
 # optional
 listenAddress: ":9205"
 timeout: "5s"
+tlsSkipVerify: false
 ```
 
 ### Password file

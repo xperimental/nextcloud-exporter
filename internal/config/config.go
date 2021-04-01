@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"strconv"
 	"time"
 
 	"github.com/spf13/pflag"
@@ -19,6 +20,7 @@ const (
 	envServerURL     = envPrefix + "SERVER"
 	envUsername      = envPrefix + "USERNAME"
 	envPassword      = envPrefix + "PASSWORD"
+	envTLSSkipVerify = envPrefix + "TLS_SKIP_VERIFY"
 )
 
 // RunMode signals what the main application should do after parsing the options.
@@ -52,12 +54,13 @@ func (m RunMode) String() string {
 
 // Config contains the configuration options for nextcloud-exporter.
 type Config struct {
-	ListenAddr string        `yaml:"listenAddress"`
-	Timeout    time.Duration `yaml:"timeout"`
-	ServerURL  string        `yaml:"server"`
-	Username   string        `yaml:"username"`
-	Password   string        `yaml:"password"`
-	RunMode    RunMode
+	ListenAddr    string        `yaml:"listenAddress"`
+	Timeout       time.Duration `yaml:"timeout"`
+	ServerURL     string        `yaml:"server"`
+	Username      string        `yaml:"username"`
+	Password      string        `yaml:"password"`
+	TLSSkipVerify bool          `yaml:"tlsSkipVerify"`
+	RunMode       RunMode
 }
 
 // Validate checks if the configuration contains all necessary parameters.
@@ -133,6 +136,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.ServerURL, "server", "s", "", "URL to Nextcloud server.")
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
+	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
@@ -174,11 +178,21 @@ func loadConfigFromFile(fileName string) (Config, error) {
 }
 
 func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
+	tlsSkipVerify := false
+	if rawValue := getEnv(envTLSSkipVerify); rawValue != "" {
+		value, err := strconv.ParseBool(rawValue)
+		if err != nil {
+			return Config{}, fmt.Errorf("can not parse value for %q: %s", envTLSSkipVerify, rawValue)
+		}
+		tlsSkipVerify = value
+	}
+
 	result := Config{
-		ListenAddr: getEnv(envListenAddress),
-		ServerURL:  getEnv(envServerURL),
-		Username:   getEnv(envUsername),
-		Password:   getEnv(envPassword),
+		ListenAddr:    getEnv(envListenAddress),
+		ServerURL:     getEnv(envServerURL),
+		Username:      getEnv(envUsername),
+		Password:      getEnv(envPassword),
+		TLSSkipVerify: tlsSkipVerify,
 	}
 
 	if raw := getEnv(envTimeout); raw != "" {
@@ -213,6 +227,10 @@ func mergeConfig(base, override Config) Config {
 
 	if override.Timeout != 0 {
 		result.Timeout = override.Timeout
+	}
+
+	if override.TLSSkipVerify {
+		result.TLSSkipVerify = override.TLSSkipVerify
 	}
 
 	return result

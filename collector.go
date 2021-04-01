@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"time"
@@ -79,13 +80,19 @@ type nextcloudCollector struct {
 	scrapeErrorsMetric prometheus.Counter
 }
 
-func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string) *nextcloudCollector {
+func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) *nextcloudCollector {
 	return &nextcloudCollector{
 		infoURL:  infoURL,
 		username: username,
 		password: password,
 		client: &http.Client{
 			Timeout: timeout,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					// disable TLS certification verification, if desired
+					InsecureSkipVerify: tlsSkipVerify,
+				},
+			},
 		},
 		userAgent: userAgent,
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
