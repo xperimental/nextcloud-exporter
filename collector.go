@@ -80,8 +80,7 @@ type nextcloudCollector struct {
 	scrapeErrorsMetric prometheus.Counter
 }
 
-func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, insecure bool) *nextcloudCollector {
-
+func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) *nextcloudCollector {
 	return &nextcloudCollector{
 		infoURL:  infoURL,
 		username: username,
@@ -91,7 +90,7 @@ func newCollector(infoURL, username, password string, timeout time.Duration, use
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
 					// disable TLS certification verification, if desired
-					InsecureSkipVerify: insecure,
+					InsecureSkipVerify: tlsSkipVerify,
 				},
 			},
 		},
