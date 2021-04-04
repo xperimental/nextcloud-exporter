@@ -137,8 +137,8 @@ These metrics are exported by `nextcloud-exporter`:
 | nextcloud_php_info                     | Contains meta information about PHP as labels. Value is always 1.      |
 | nextcloud_php_memory_limit_bytes       | Configured PHP memory limit in bytes                                   |
 | nextcloud_php_upload_max_size_bytes    | Configured maximum upload size in bytes                                |
-| nextcloud_scrape_errors_total          | Number of scrape errors from this collector                            |
-| nextcloud_shares_federated_total       | Number of federated shares by directions `sent` / `received`           |
+| nextcloud_scrape_errors_total          | Counts the number of scrape errors by this collector                   |
+| nextcloud_shares_federated_total       | Number of federated shares by direction `sent` / `received`            |
 | nextcloud_shares_total                 | Number of shares by type: <br> `authlink`: shared password protected links <br> `group`: shared groups <br>`link`: all shared links <br> `user`: shared users |
 | nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1.|
 | nextcloud_up                           | Indicates if the metrics could be scraped by the exporter: <br>`1`: successful<br>`0`: unsuccessful (server down, server/endpoint not reachable, invalid credentials, ...) |
