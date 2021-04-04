@@ -37,7 +37,7 @@ var (
 		nil, nil)
 	freeSpaceDesc = prometheus.NewDesc(
 		metricPrefix+"free_space_bytes",
-		"Number of bytes of free space on the instance.",
+		"Free disk space in data directory in bytes.",
 		nil, nil)
 	sharesDesc = prometheus.NewDesc(
 		metricPrefix+"shares_total",
@@ -97,7 +97,7 @@ func newCollector(infoURL, username, password string, timeout time.Duration, use
 		userAgent: userAgent,
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: metricPrefix + "up",
-			Help: "Shows if nextcloud is deemed up by the collector.",
+			Help: "Indicates if the metrics could be scraped by the exporter.",
 		}),
 		authErrorsMetric: prometheus.NewCounter(prometheus.CounterOpts{
 			Name: metricPrefix + "auth_errors_total",
