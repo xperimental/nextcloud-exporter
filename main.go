@@ -69,13 +69,18 @@ func main() {
 
 	log.Infof("Nextcloud server: %s User: %s", cfg.ServerURL, cfg.Username)
 
+	parser := serverinfo.Parse
 	infoURL := cfg.ServerURL + serverinfo.InfoPath
+	if cfg.UseJSON {
+		infoURL += "?format=json"
+		parser = serverinfo.ParseJSON
+	}
 
 	if cfg.TLSSkipVerify {
 		log.Warn("HTTPS certificate verification is disabled.")
 	}
 
-	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
+	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify, parser)
 	if err := prometheus.Register(collector); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
