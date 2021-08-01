@@ -34,7 +34,7 @@ image:
 	docker build -t "xperimental/nextcloud-exporter:$(DOCKER_TAG)" .
 
 all-images:
-	docker buildx build -t "ghcr.io/xperimental/nextcloud-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
+	docker buildx build -t "ghcr.io/xperimental/nextcloud-exporter:$(DOCKER_TAG)" -t "xperimental/nextcloud-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
 
 clean:
 	rm -f nextcloud-exporter
