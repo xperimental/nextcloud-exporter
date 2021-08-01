@@ -1,14 +1,31 @@
-# nextcloud-exporter [![Docker Build Status](https://img.shields.io/docker/cloud/build/xperimental/nextcloud-exporter.svg?style=flat-square)](https://hub.docker.com/r/xperimental/nextcloud-exporter/)
+# nextcloud-exporter
 
 A [prometheus](https://prometheus.io) exporter for getting some metrics of a nextcloud server instance.
 
 ## Installation
 
-If you have a working Go installation, getting the binary should be as simple as
+### Docker Image
+
+The preferred way to use `nextcloud-exporter` is by running the provided Docker image. It is currently provided on Docker Hub and GitHub Container Registry:
+
+```plain
+docker pull xperimental/nextcloud-exporter:latest
+docker pull ghcr.io/xperimental/nextcloud-exporter:latest
+```
+
+In addition to the `latest` tag which points to the version currently in the `master` branch, tagged versions are also available.
+
+### From Source
+
+If you have a recent (>= 1.16) working Go installation and GNU Make, getting the binary should be as simple as
 
 ```bash
-go get github.com/xperimental/nextcloud-exporter
+git clone https://github.com/xperimental/nextcloud-exporter.git
+cd nextcloud-exporter
+make
 ```
+
+After this there should be a `nextcloud-exporter` binary in your current directory.
 
 ## Client credentials
 
