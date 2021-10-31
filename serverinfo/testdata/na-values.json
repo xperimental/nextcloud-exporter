@@ -1,0 +1,135 @@
+{
+  "ocs": {
+    "meta": {
+      "status": "ok",
+      "statuscode": 200,
+      "message": "OK"
+    },
+    "data": {
+      "nextcloud": {
+        "system": {
+          "version": "21.0.3.1",
+          "theme": "",
+          "enable_avatars": "yes",
+          "enable_previews": "yes",
+          "memcache.local": "\\OC\\Memcache\\APCu",
+          "memcache.distributed": "none",
+          "filelocking.enabled": "yes",
+          "memcache.locking": "\\OC\\Memcache\\Redis",
+          "debug": "no",
+          "freespace": 7635480576,
+          "cpuload": [
+            0.08,
+            0.05,
+            0.06
+          ],
+          "mem_total": "N/A",
+          "mem_free": "N/A",
+          "swap_total": "N/A",
+          "swap_free": "N/A",
+          "apps": {
+            "num_installed": 42,
+            "num_updates_available": 0,
+            "app_updates": []
+          }
+        },
+        "storage": {
+          "num_users": 4,
+          "num_files": 148948,
+          "num_storages": 32,
+          "num_storages_local": 3,
+          "num_storages_home": 4,
+          "num_storages_other": 25
+        },
+        "shares": {
+          "num_shares": 10,
+          "num_shares_user": 0,
+          "num_shares_groups": 2,
+          "num_shares_link": 4,
+          "num_shares_mail": 1,
+          "num_shares_room": 0,
+          "num_shares_link_no_password": 4,
+          "num_fed_shares_sent": 0,
+          "num_fed_shares_received": 0,
+          "permissions_3_1": "2",
+          "permissions_3_17": "1",
+          "permissions_4_17": "1",
+          "permissions_1_31": "2",
+          "permissions_2_31": "3",
+          "permissions_3_31": "1"
+        }
+      },
+      "server": {
+        "webserver": "Apache\/2.4.41 (Ubuntu)",
+        "php": {
+          "version": "7.4.3",
+          "memory_limit": 536870912,
+          "max_execution_time": 3600,
+          "upload_max_filesize": 2097152,
+          "opcache": {
+            "opcache_enabled": true,
+            "cache_full": false,
+            "restart_pending": false,
+            "restart_in_progress": false,
+            "memory_usage": {
+              "used_memory": 35866872,
+              "free_memory": 98334320,
+              "wasted_memory": 16536,
+              "current_wasted_percentage": 0.012320280075073242
+            },
+            "interned_strings_usage": {
+              "buffer_size": 6291008,
+              "used_memory": 4225688,
+              "free_memory": 2065320,
+              "number_of_strings": 68439
+            },
+            "opcache_statistics": {
+              "num_cached_scripts": 1818,
+              "num_cached_keys": 3489,
+              "max_cached_keys": 16229,
+              "hits": 2725757,
+              "start_time": 1627817478,
+              "last_restart_time": 0,
+              "oom_restarts": 0,
+              "hash_restarts": 0,
+              "manual_restarts": 0,
+              "misses": 1830,
+              "blacklist_misses": 0,
+              "blacklist_miss_ratio": 0,
+              "opcache_hit_rate": 99.93290773126576
+            }
+          },
+          "apcu": {
+            "cache": {
+              "num_slots": 4099,
+              "ttl": 0,
+              "num_hits": 175992,
+              "num_misses": 1948,
+              "num_inserts": 2009,
+              "num_entries": 599,
+              "expunges": 0,
+              "start_time": 1627817478,
+              "mem_size": 295024,
+              "memory_type": "mmap"
+            },
+            "sma": {
+              "num_seg": 1,
+              "seg_size": 33554312,
+              "avail_mem": 33206176
+            }
+          }
+        },
+        "database": {
+          "type": "mysql",
+          "version": "10.5.11",
+          "size": 59457536
+        }
+      },
+      "activeUsers": {
+        "last5minutes": 1,
+        "last1hour": 1,
+        "last24hours": 2
+      }
+    }
+  }
+}

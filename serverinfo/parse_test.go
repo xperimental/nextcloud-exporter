@@ -5,10 +5,11 @@ import (
 	"testing"
 )
 
-func TestParseServerInfo(t *testing.T) {
+func TestParseJSON(t *testing.T) {
 	inputFiles := []string{
-		"negative-space.xml",
-		"na-values.xml",
+		"info.json",
+		"negative-space.json",
+		"na-values.json",
 	}
 
 	for _, inputFile := range inputFiles {
@@ -21,7 +22,7 @@ func TestParseServerInfo(t *testing.T) {
 				t.Fatalf("error opening test data: %s", err)
 			}
 
-			if _, err := Parse(reader); err != nil {
+			if _, err := ParseJSON(reader); err != nil {
 				t.Errorf("got error %q", err)
 			}
 		})

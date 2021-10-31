@@ -73,8 +73,8 @@ type nextcloudCollector struct {
 	infoURL            string
 	username           string
 	password           string
-	client             *http.Client
 	userAgent          string
+	client             *http.Client
 	upMetric           prometheus.Gauge
 	authErrorsMetric   prometheus.Counter
 	scrapeErrorsMetric prometheus.Counter
@@ -82,9 +82,10 @@ type nextcloudCollector struct {
 
 func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) *nextcloudCollector {
 	return &nextcloudCollector{
-		infoURL:  infoURL,
-		username: username,
-		password: password,
+		infoURL:   infoURL,
+		username:  username,
+		password:  password,
+		userAgent: userAgent,
 		client: &http.Client{
 			Timeout: timeout,
 			Transport: &http.Transport{
@@ -94,7 +95,6 @@ func newCollector(infoURL, username, password string, timeout time.Duration, use
 				},
 			},
 		},
-		userAgent: userAgent,
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: metricPrefix + "up",
 			Help: "Indicates if the metrics could be scraped by the exporter.",
@@ -160,10 +160,12 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
-	status, err := serverinfo.Parse(res.Body)
+
+	status, err := serverinfo.ParseJSON(res.Body)
 	if err != nil {
-		return fmt.Errorf("Error parsing server info: %s", err)
+		return fmt.Errorf("can not parse server info: %w", err)
 	}
+
 	return readMetrics(ch, status)
 }
 
