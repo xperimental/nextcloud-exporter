@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -70,27 +69,23 @@ var (
 		nil, nil)
 )
 
-type parserFunc func(reader io.Reader) (serverinfo.ServerInfo, error)
-
 type nextcloudCollector struct {
 	infoURL            string
 	username           string
 	password           string
 	userAgent          string
-	parser             parserFunc
 	client             *http.Client
 	upMetric           prometheus.Gauge
 	authErrorsMetric   prometheus.Counter
 	scrapeErrorsMetric prometheus.Counter
 }
 
-func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool, parser parserFunc) *nextcloudCollector {
+func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) *nextcloudCollector {
 	return &nextcloudCollector{
 		infoURL:   infoURL,
 		username:  username,
 		password:  password,
 		userAgent: userAgent,
-		parser:    parser,
 		client: &http.Client{
 			Timeout: timeout,
 			Transport: &http.Transport{
@@ -166,7 +161,7 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	status, err := c.parser(res.Body)
+	status, err := serverinfo.ParseJSON(res.Body)
 	if err != nil {
 		return fmt.Errorf("can not parse server info: %w", err)
 	}

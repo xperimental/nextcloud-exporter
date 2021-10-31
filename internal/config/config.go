@@ -60,7 +60,6 @@ type Config struct {
 	Username      string        `yaml:"username"`
 	Password      string        `yaml:"password"`
 	TLSSkipVerify bool          `yaml:"tlsSkipVerify"`
-	UseJSON       bool          `yaml:"json"`
 	RunMode       RunMode
 }
 
@@ -138,7 +137,6 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
 	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
-	flags.BoolVar(&result.UseJSON, "use-json", defaults.UseJSON, "Read data in JSON format from Nextcloud server.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
@@ -233,10 +231,6 @@ func mergeConfig(base, override Config) Config {
 
 	if override.TLSSkipVerify {
 		result.TLSSkipVerify = override.TLSSkipVerify
-	}
-
-	if override.UseJSON {
-		result.UseJSON = override.UseJSON
 	}
 
 	return result
