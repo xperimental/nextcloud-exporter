@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -154,7 +155,7 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 
 	if res.StatusCode == http.StatusUnauthorized {
 		c.authErrorsMetric.Inc()
-		return fmt.Errorf("wrong credentials")
+		return errors.New("wrong credentials")
 	}
 
 	if res.StatusCode != http.StatusOK {
@@ -244,7 +245,7 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerI
 	for _, m := range metrics {
 		metric, err := prometheus.NewConstMetric(m.desc, prometheus.GaugeValue, m.value)
 		if err != nil {
-			return fmt.Errorf("error creating metric for %s: %s", m.desc, err)
+			return fmt.Errorf("error creating metric for %s: %w", m.desc, err)
 		}
 		ch <- metric
 	}
@@ -274,7 +275,7 @@ func collectMap(ch chan<- prometheus.Metric, desc *prometheus.Desc, labelValueMa
 	for k, v := range labelValueMap {
 		metric, err := prometheus.NewConstMetric(desc, prometheus.GaugeValue, v, k)
 		if err != nil {
-			return fmt.Errorf("error creating shares metric for %s: %s", k, err)
+			return fmt.Errorf("error creating shares metric for %s: %w", k, err)
 		}
 		ch <- metric
 	}
