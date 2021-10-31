@@ -1,11 +1,20 @@
 package testutil
 
-import "github.com/google/go-cmp/cmp"
+import (
+	"strings"
+)
 
-// ErrorComparer provides a way to compare errors using cmp.Diff
-var ErrorComparer = cmp.Comparer(func(a, b error) bool {
-	aE := a.Error()
-	bE := b.Error()
+// EqualErrorMessage compares two errors by just comparing their messages.
+func EqualErrorMessage(a, b error) bool {
+	aMsg := "<nil>"
+	if a != nil {
+		aMsg = a.Error()
+	}
 
-	return aE == bE
-})
+	bMsg := "<nil>"
+	if b != nil {
+		bMsg = b.Error()
+	}
+
+	return strings.Compare(aMsg, bMsg) == 0
+}

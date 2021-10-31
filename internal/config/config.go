@@ -88,13 +88,13 @@ func Get() (Config, error) {
 func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 	result, configFile, err := loadConfigFromFlags(args)
 	if err != nil {
-		return Config{}, fmt.Errorf("error parsing flags: %s", err)
+		return Config{}, fmt.Errorf("error parsing flags: %w", err)
 	}
 
 	if configFile != "" {
 		rawFile, err := loadConfigFromFile(configFile)
 		if err != nil {
-			return Config{}, fmt.Errorf("error reading configuration file: %s", err)
+			return Config{}, fmt.Errorf("error reading configuration file: %w", err)
 		}
 
 		result = mergeConfig(result, rawFile)
@@ -102,7 +102,7 @@ func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 
 	env, err := loadConfigFromEnv(envFunc)
 	if err != nil {
-		return Config{}, fmt.Errorf("error reading environment variables: %s", err)
+		return Config{}, fmt.Errorf("error reading environment variables: %w", err)
 	}
 	result = mergeConfig(result, env)
 
@@ -110,7 +110,7 @@ func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 		fileName := strings.TrimPrefix(result.Password, "@")
 		password, err := readPasswordFile(fileName)
 		if err != nil {
-			return Config{}, fmt.Errorf("can not read password file: %s", err)
+			return Config{}, fmt.Errorf("can not read password file: %w", err)
 		}
 
 		result.Password = password

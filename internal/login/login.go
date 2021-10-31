@@ -73,7 +73,7 @@ func Init(log logrus.FieldLogger, userAgent, serverURL string) *Client {
 func (c *Client) StartInteractive() error {
 	version, err := c.getMajorVersion()
 	if err != nil {
-		return fmt.Errorf("error getting version: %s", err)
+		return fmt.Errorf("error getting version: %w", err)
 	}
 
 	if version < minimumMajorVersion {
@@ -82,14 +82,14 @@ func (c *Client) StartInteractive() error {
 
 	info, err := c.getLoginInfo()
 	if err != nil {
-		return fmt.Errorf("error getting login info: %s", err)
+		return fmt.Errorf("error getting login info: %w", err)
 	}
 	c.log.Infof("Please open this URL in a browser: %s", info.LoginURL)
 	c.log.Infoln("Waiting for login ... (Ctrl-C to abort)")
 
 	login, err := c.pollLogin(info.PollInfo)
 	if err != nil {
-		return fmt.Errorf("error during poll: %s", err)
+		return fmt.Errorf("error during poll: %w", err)
 	}
 
 	c.log.Infof("Username: %s", login.Username)
@@ -100,7 +100,7 @@ func (c *Client) StartInteractive() error {
 func (c *Client) doRequest(method, url string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
-		return nil, fmt.Errorf("can not create request: %s", err)
+		return nil, fmt.Errorf("can not create request: %w", err)
 	}
 	req.Header.Set("User-Agent", c.userAgent)
 
@@ -110,7 +110,7 @@ func (c *Client) doRequest(method, url string, body io.Reader) (*http.Response, 
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error connecting: %s", err)
+		return nil, fmt.Errorf("error connecting: %w", err)
 	}
 
 	return res, nil
@@ -120,7 +120,7 @@ func (c *Client) getMajorVersion() (int, error) {
 	statusURL := c.serverURL + statusPath
 	res, err := c.doRequest(http.MethodGet, statusURL, nil)
 	if err != nil {
-		return 0, fmt.Errorf("error connecting: %s", err)
+		return 0, fmt.Errorf("error connecting: %w", err)
 	}
 	defer res.Body.Close()
 
@@ -132,13 +132,13 @@ func (c *Client) getMajorVersion() (int, error) {
 		Version string `json:"version"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&status); err != nil {
-		return 0, fmt.Errorf("error decoding status: %s", err)
+		return 0, fmt.Errorf("error decoding status: %w", err)
 	}
 
 	tokens := strings.SplitN(status.Version, ".", 2)
 	version, err := strconv.Atoi(tokens[0])
 	if err != nil {
-		return 0, fmt.Errorf("can not parse %q as version: %s", status.Version, err)
+		return 0, fmt.Errorf("can not parse %q as version: %w", status.Version, err)
 	}
 
 	return version, nil
@@ -148,7 +148,7 @@ func (c *Client) getLoginInfo() (loginInfo, error) {
 	loginURL := c.serverURL + loginPath
 	res, err := c.doRequest(http.MethodPost, loginURL, nil)
 	if err != nil {
-		return loginInfo{}, fmt.Errorf("error connecting: %s", err)
+		return loginInfo{}, fmt.Errorf("error connecting: %w", err)
 	}
 	defer res.Body.Close()
 
@@ -158,7 +158,7 @@ func (c *Client) getLoginInfo() (loginInfo, error) {
 
 	var result loginInfo
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		return loginInfo{}, fmt.Errorf("error decoding login info: %s", err)
+		return loginInfo{}, fmt.Errorf("error decoding login info: %w", err)
 	}
 
 	return result, nil
@@ -184,7 +184,7 @@ func (c *Client) pollLogin(info pollInfo) (Login, error) {
 
 		var password passwordInfo
 		if err := json.NewDecoder(res.Body).Decode(&password); err != nil {
-			return Login{}, fmt.Errorf("error decoding password info: %s", err)
+			return Login{}, fmt.Errorf("error decoding password info: %w", err)
 		}
 
 		return Login{

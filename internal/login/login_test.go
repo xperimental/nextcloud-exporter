@@ -68,8 +68,8 @@ func TestGetMajorVersion(t *testing.T) {
 
 			version, err := c.getMajorVersion()
 
-			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
-				t.Errorf("errors differ: -got +want\n%s", diff)
+			if !testutil.EqualErrorMessage(err, tc.wantErr) {
+				t.Errorf("got error %q, want %q", err, tc.wantErr)
 			}
 
 			if err != nil {
@@ -124,8 +124,8 @@ func TestGetLoginInfo(t *testing.T) {
 
 			info, err := c.getLoginInfo()
 
-			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
-				t.Errorf("errors differ: -got +want\n%s", diff)
+			if !testutil.EqualErrorMessage(err, tc.wantErr) {
+				t.Errorf("got error %q, want %q", err, tc.wantErr)
 			}
 
 			if err != nil {
@@ -174,8 +174,8 @@ func TestPollPassword(t *testing.T) {
 			c := testClient("")
 			login, err := c.pollLogin(tc.pollInfo)
 
-			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
-				t.Errorf("errors differ: -got +want\n%s", diff)
+			if !testutil.EqualErrorMessage(err, tc.wantErr) {
+				t.Errorf("got error %q, want %q", err, tc.wantErr)
 			}
 
 			if err != nil {

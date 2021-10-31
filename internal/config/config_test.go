@@ -280,8 +280,8 @@ func TestConfig(t *testing.T) {
 
 			config, err := parseConfig(tc.args, testEnv(tc.env))
 
-			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
-				t.Errorf("error differs: -got +want\n%s", diff)
+			if !testutil.EqualErrorMessage(err, tc.wantErr) {
+				t.Errorf("got error %q, want %q", err, tc.wantErr)
 			}
 
 			if err != nil {
@@ -343,8 +343,8 @@ func TestConfigValidate(t *testing.T) {
 
 			err := tc.config.Validate()
 
-			if diff := cmp.Diff(err, tc.wantErr, testutil.ErrorComparer); diff != "" {
-				t.Errorf("error differs: -got +want\n%s", diff)
+			if !testutil.EqualErrorMessage(err, tc.wantErr) {
+				t.Errorf("got error %q, want %q", err, tc.wantErr)
 			}
 		})
 	}
