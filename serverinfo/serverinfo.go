@@ -201,7 +201,7 @@ func (d *Database) UnmarshalJSON(data []byte) error {
 		}
 		d.Size = parsedSize
 	default:
-		return fmt.Errorf("unexpected size for database.size: %t", rawSize)
+		return fmt.Errorf("unexpected type for database.size: %t", rawSize)
 	}
 
 	return nil
