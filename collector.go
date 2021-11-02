@@ -13,9 +13,14 @@ import (
 
 const (
 	metricPrefix = "nextcloud_"
+
+	labelErrorCauseOther = "other"
+	labelErrorCauseAuth  = "auth"
 )
 
 var (
+	errNotAuthorized = errors.New("wrong credentials")
+
 	systemInfoDesc = prometheus.NewDesc(
 		metricPrefix+"system_info",
 		"Contains meta information about Nextcloud as labels. Value is always 1.",
@@ -77,8 +82,7 @@ type nextcloudCollector struct {
 	userAgent          string
 	client             *http.Client
 	upMetric           prometheus.Gauge
-	authErrorsMetric   prometheus.Counter
-	scrapeErrorsMetric prometheus.Counter
+	scrapeErrorsMetric *prometheus.CounterVec
 }
 
 func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) *nextcloudCollector {
@@ -100,20 +104,15 @@ func newCollector(infoURL, username, password string, timeout time.Duration, use
 			Name: metricPrefix + "up",
 			Help: "Indicates if the metrics could be scraped by the exporter.",
 		}),
-		authErrorsMetric: prometheus.NewCounter(prometheus.CounterOpts{
-			Name: metricPrefix + "auth_errors_total",
-			Help: "Counts number of authentication errors encountered by the collector.",
-		}),
-		scrapeErrorsMetric: prometheus.NewCounter(prometheus.CounterOpts{
+		scrapeErrorsMetric: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Name: metricPrefix + "scrape_errors_total",
 			Help: "Counts the number of scrape errors by this collector.",
-		}),
+		}, []string{"cause"}),
 	}
 }
 
 func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 	c.upMetric.Describe(ch)
-	c.authErrorsMetric.Describe(ch)
 	c.scrapeErrorsMetric.Describe(ch)
 	ch <- usersDesc
 	ch <- filesDesc
@@ -127,14 +126,17 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 	if err := c.collectNextcloud(ch); err != nil {
 		log.Errorf("Error during scrape: %s", err)
 
-		c.scrapeErrorsMetric.Inc()
+		cause := labelErrorCauseOther
+		if err == errNotAuthorized {
+			cause = labelErrorCauseAuth
+		}
+		c.scrapeErrorsMetric.WithLabelValues(cause).Inc()
 		c.upMetric.Set(0)
 	} else {
 		c.upMetric.Set(1)
 	}
 
 	c.upMetric.Collect(ch)
-	c.authErrorsMetric.Collect(ch)
 	c.scrapeErrorsMetric.Collect(ch)
 }
 
@@ -154,8 +156,7 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusUnauthorized {
-		c.authErrorsMetric.Inc()
-		return errors.New("wrong credentials")
+		return errNotAuthorized
 	}
 
 	if res.StatusCode != http.StatusOK {
