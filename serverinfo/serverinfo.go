@@ -3,7 +3,6 @@ package serverinfo
 import (
 	"encoding/json"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -191,7 +190,7 @@ func (d *Database) UnmarshalJSON(data []byte) error {
 	switch rawSize := raw.Size.(type) {
 	case float64:
 		if rawSize < 0 {
-			return errors.New("negative value for database.size")
+			return fmt.Errorf("negative value for database.size: %f", rawSize)
 		}
 		d.Size = uint64(rawSize)
 	case string:
