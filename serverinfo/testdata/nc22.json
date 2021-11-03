@@ -1,0 +1,140 @@
+{
+  "ocs": {
+    "meta": {
+      "status": "ok",
+      "statuscode": 200,
+      "message": "OK"
+    },
+    "data": {
+      "nextcloud": {
+        "system": {
+          "version": "22.2.0.2",
+          "theme": "",
+          "enable_avatars": "yes",
+          "enable_previews": "yes",
+          "memcache.local": "\\OC\\Memcache\\Redis",
+          "memcache.distributed": "\\OC\\Memcache\\Redis",
+          "filelocking.enabled": "yes",
+          "memcache.locking": "\\OC\\Memcache\\Redis",
+          "debug": "no",
+          "freespace": 12975042,
+          "cpuload": [
+            0.8,
+            0.4,
+            0.3
+          ],
+          "mem_total": 394078,
+          "mem_free": 184536,
+          "swap_total": 52428,
+          "swap_free": 3960,
+          "apps": {
+            "num_installed": 4,
+            "num_updates_available": 0,
+            "app_updates": []
+          }
+        },
+        "storage": {
+          "num_users": 3,
+          "num_files": 412,
+          "num_storages": 6,
+          "num_storages_local": 4,
+          "num_storages_home": 3,
+          "num_storages_other": 2
+        },
+        "shares": {
+          "num_shares": 8,
+          "num_shares_user": 4,
+          "num_shares_groups": 2,
+          "num_shares_link": 7,
+          "num_shares_mail": 0,
+          "num_shares_room": 0,
+          "num_shares_link_no_password": 7,
+          "num_fed_shares_sent": 1,
+          "num_fed_shares_received": 2,
+          "permissions_0_1": "3",
+          "permissions_3_1": "43",
+          "permissions_1_15": "1",
+          "permissions_2_15": "1",
+          "permissions_3_15": "3",
+          "permissions_3_17": "27",
+          "permissions_0_31": "1",
+          "permissions_1_31": "1",
+          "permissions_2_31": "5",
+          "permissions_3_31": "2",
+          "permissions_6_31": "1"
+        }
+      },
+      "server": {
+        "webserver": "nginx\/1.14.0",
+        "php": {
+          "version": "7.4.0",
+          "memory_limit": 26843545,
+          "max_execution_time": 360,
+          "upload_max_filesize": 1677721,
+          "opcache": {
+            "opcache_enabled": true,
+            "cache_full": false,
+            "restart_pending": false,
+            "restart_in_progress": false,
+            "memory_usage": {
+              "used_memory": 3928244,
+              "free_memory": 9490738,
+              "wasted_memory": 2789,
+              "current_wasted_percentage": 0.020
+            },
+            "interned_strings_usage": {
+              "buffer_size": 629100,
+              "used_memory": 489804,
+              "free_memory": 139296,
+              "number_of_strings": 7795
+            },
+            "opcache_statistics": {
+              "num_cached_scripts": 209,
+              "num_cached_keys": 399,
+              "max_cached_keys": 1622,
+              "hits": 391187,
+              "start_time": 1634933931,
+              "last_restart_time": 0,
+              "oom_restarts": 0,
+              "hash_restarts": 0,
+              "manual_restarts": 0,
+              "misses": 210,
+              "blacklist_misses": 0,
+              "blacklist_miss_ratio": 0,
+              "opcache_hit_rate": 99.994
+            }
+          },
+          "apcu": {
+            "cache": {
+              "num_slots": 409,
+              "ttl": 0,
+              "num_hits": 0,
+              "num_misses": 0,
+              "num_inserts": 0,
+              "num_entries": 0,
+              "expunges": 0,
+              "start_time": 1634933931,
+              "mem_size": 0,
+              "memory_type": "mmap"
+            },
+            "sma": {
+              "num_seg": 1,
+              "seg_size": 335543,
+              "avail_mem": 335213
+            }
+          }
+        },
+        "database": {
+          "type": "mysql",
+          "version": "10.5.12",
+          "size": "30638080"
+        }
+      },
+      "activeUsers": {
+        "last5minutes": 3,
+        "last1hour": 3,
+        "last24hours": 3
+      }
+    }
+  }
+}

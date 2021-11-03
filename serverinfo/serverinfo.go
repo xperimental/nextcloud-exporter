@@ -3,6 +3,8 @@ package serverinfo
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
+	"strconv"
 )
 
 const (
@@ -169,6 +171,39 @@ type Database struct {
 	Type    string `json:"type"`
 	Version string `json:"version"`
 	Size    uint64 `json:"size"`
+}
+
+func (d *Database) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type    string      `json:"type"`
+		Version string      `json:"version"`
+		Size    interface{} `json:"size"`
+	}
+
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	d.Type = raw.Type
+	d.Version = raw.Version
+
+	switch rawSize := raw.Size.(type) {
+	case float64:
+		if rawSize < 0 {
+			return fmt.Errorf("negative value for database.size: %f", rawSize)
+		}
+		d.Size = uint64(rawSize)
+	case string:
+		parsedSize, err := strconv.ParseUint(rawSize, 10, 64)
+		if err != nil {
+			return fmt.Errorf("can not parse database.size %q: %w", rawSize, err)
+		}
+		d.Size = parsedSize
+	default:
+		return fmt.Errorf("unexpected type for database.size: %t", rawSize)
+	}
+
+	return nil
 }
 
 // ActiveUsers contains statistics about the active users.
