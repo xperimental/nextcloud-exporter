@@ -20,6 +20,7 @@ const (
 	envServerURL     = envPrefix + "SERVER"
 	envUsername      = envPrefix + "USERNAME"
 	envPassword      = envPrefix + "PASSWORD"
+	envAuthToken     = envPrefix + "AUTH_TOKEN"
 	envTLSSkipVerify = envPrefix + "TLS_SKIP_VERIFY"
 )
 
@@ -59,22 +60,36 @@ type Config struct {
 	ServerURL     string        `yaml:"server"`
 	Username      string        `yaml:"username"`
 	Password      string        `yaml:"password"`
+	AuthToken     string        `yaml:"authToken"`
 	TLSSkipVerify bool          `yaml:"tlsSkipVerify"`
 	RunMode       RunMode
 }
 
+var (
+	errValidateNoServerURL = errors.New("need to set a server URL")
+	errValidateNoAuth      = errors.New("need to either set username/password or a token")
+	errValidateNoUsername  = errors.New("need to provide a username")
+	errValidateNoPassword  = errors.New("need to provide a password")
+)
+
 // Validate checks if the configuration contains all necessary parameters.
 func (c Config) Validate() error {
 	if len(c.ServerURL) == 0 {
-		return errors.New("need to set a server URL")
+		return errValidateNoServerURL
 	}
 
-	if len(c.Username) == 0 {
-		return errors.New("need to provide a username")
-	}
+	if len(c.AuthToken) == 0 {
+		if len(c.Username) == 0 && len(c.Password) == 0 {
+			return errValidateNoAuth
+		}
 
-	if len(c.Password) == 0 {
-		return errors.New("need to provide a password")
+		if len(c.Username) == 0 {
+			return errValidateNoUsername
+		}
+
+		if len(c.Password) == 0 {
+			return errValidateNoPassword
+		}
 	}
 
 	return nil
@@ -116,6 +131,16 @@ func parseConfig(args []string, envFunc func(string) string) (Config, error) {
 		result.Password = password
 	}
 
+	if strings.HasPrefix(result.AuthToken, "@") {
+		fileName := strings.TrimPrefix(result.AuthToken, "@")
+		authToken, err := readPasswordFile(fileName)
+		if err != nil {
+			return Config{}, fmt.Errorf("can not read token file: %w", err)
+		}
+
+		result.AuthToken = authToken
+	}
+
 	return result, nil
 }
 
@@ -136,6 +161,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.ServerURL, "server", "s", "", "URL to Nextcloud server.")
 	flags.StringVarP(&result.Username, "username", "u", defaults.Username, "Username for connecting to Nextcloud.")
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
+	flags.StringVar(&result.AuthToken, "auth-token", defaults.AuthToken, "Authentication token. Can replace username and password when using Nextcloud 22 or newer.")
 	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
@@ -192,6 +218,7 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		ServerURL:     getEnv(envServerURL),
 		Username:      getEnv(envUsername),
 		Password:      getEnv(envPassword),
+		AuthToken:     getEnv(envAuthToken),
 		TLSSkipVerify: tlsSkipVerify,
 	}
 
@@ -223,6 +250,10 @@ func mergeConfig(base, override Config) Config {
 
 	if override.Password != "" {
 		result.Password = override.Password
+	}
+
+	if override.AuthToken != "" {
+		result.AuthToken = override.AuthToken
 	}
 
 	if override.Timeout != 0 {
