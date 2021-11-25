@@ -1,4 +1,4 @@
-package main
+package metrics
 
 import (
 	"crypto/tls"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/sirupsen/logrus"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
@@ -76,6 +77,7 @@ var (
 )
 
 type nextcloudCollector struct {
+	log                logrus.FieldLogger
 	infoURL            string
 	username           string
 	password           string
@@ -85,8 +87,9 @@ type nextcloudCollector struct {
 	scrapeErrorsMetric *prometheus.CounterVec
 }
 
-func newCollector(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) *nextcloudCollector {
-	return &nextcloudCollector{
+func RegisterCollector(log logrus.FieldLogger, infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) error {
+	c := &nextcloudCollector{
+		log:       log,
 		infoURL:   infoURL,
 		username:  username,
 		password:  password,
@@ -109,6 +112,8 @@ func newCollector(infoURL, username, password string, timeout time.Duration, use
 			Help: "Counts the number of scrape errors by this collector.",
 		}, []string{"cause"}),
 	}
+
+	return prometheus.Register(c)
 }
 
 func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -124,7 +129,7 @@ func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 
 func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 	if err := c.collectNextcloud(ch); err != nil {
-		log.Errorf("Error during scrape: %s", err)
+		c.log.Errorf("Error during scrape: %s", err)
 
 		cause := labelErrorCauseOther
 		if err == errNotAuthorized {
