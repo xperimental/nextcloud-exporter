@@ -150,7 +150,6 @@ These metrics are exported by `nextcloud-exporter`:
 | nextcloud_active_users_total           | Number of active users for the last five minutes                       |
 | nextcloud_apps_installed_total         | Number of currently installed apps                                     |
 | nextcloud_apps_updates_available_total | Number of apps that have available updates                             |
-| nextcloud_auth_errors_total            | Counts number of authentication errors encountered by the collector    |
 | nextcloud_database_size_bytes          | Size of database in bytes as reported from engine                      |
 | nextcloud_exporter_info                | Contains meta information of the exporter. Value is always 1.          |
 | nextcloud_files_total                  | Number of files served by the instance                                 |
