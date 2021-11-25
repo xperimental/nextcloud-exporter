@@ -7,6 +7,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/xperimental/nextcloud-exporter/internal/client"
 	"github.com/xperimental/nextcloud-exporter/internal/config"
 	"github.com/xperimental/nextcloud-exporter/internal/login"
 	"github.com/xperimental/nextcloud-exporter/internal/metrics"
@@ -75,7 +76,8 @@ func main() {
 		log.Warn("HTTPS certificate verification is disabled.")
 	}
 
-	if err := metrics.RegisterCollector(log, infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify); err != nil {
+	infoClient := client.New(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
+	if err := metrics.RegisterCollector(log, infoClient); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
 

@@ -1,14 +1,11 @@
 package metrics
 
 import (
-	"crypto/tls"
-	"errors"
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
+	"github.com/xperimental/nextcloud-exporter/internal/client"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
@@ -20,8 +17,6 @@ const (
 )
 
 var (
-	errNotAuthorized = errors.New("wrong credentials")
-
 	systemInfoDesc = prometheus.NewDesc(
 		metricPrefix+"system_info",
 		"Contains meta information about Nextcloud as labels. Value is always 1.",
@@ -77,32 +72,18 @@ var (
 )
 
 type nextcloudCollector struct {
-	log                logrus.FieldLogger
-	infoURL            string
-	username           string
-	password           string
-	userAgent          string
-	client             *http.Client
+	log        logrus.FieldLogger
+	infoClient client.InfoClient
+
 	upMetric           prometheus.Gauge
 	scrapeErrorsMetric *prometheus.CounterVec
 }
 
-func RegisterCollector(log logrus.FieldLogger, infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) error {
+func RegisterCollector(log logrus.FieldLogger, infoClient client.InfoClient) error {
 	c := &nextcloudCollector{
-		log:       log,
-		infoURL:   infoURL,
-		username:  username,
-		password:  password,
-		userAgent: userAgent,
-		client: &http.Client{
-			Timeout: timeout,
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{
-					// disable TLS certification verification, if desired
-					InsecureSkipVerify: tlsSkipVerify,
-				},
-			},
-		},
+		log:        log,
+		infoClient: infoClient,
+
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: metricPrefix + "up",
 			Help: "Indicates if the metrics could be scraped by the exporter.",
@@ -132,7 +113,7 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 		c.log.Errorf("Error during scrape: %s", err)
 
 		cause := labelErrorCauseOther
-		if err == errNotAuthorized {
+		if err == client.ErrNotAuthorized {
 			cause = labelErrorCauseAuth
 		}
 		c.scrapeErrorsMetric.WithLabelValues(cause).Inc()
@@ -146,37 +127,15 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 }
 
 func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error {
-	req, err := http.NewRequest(http.MethodGet, c.infoURL, nil)
+	status, err := c.infoClient()
 	if err != nil {
 		return err
-	}
-
-	req.SetBasicAuth(c.username, c.password)
-	req.Header.Set("User-Agent", c.userAgent)
-
-	res, err := c.client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode == http.StatusUnauthorized {
-		return errNotAuthorized
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
-	}
-
-	status, err := serverinfo.ParseJSON(res.Body)
-	if err != nil {
-		return fmt.Errorf("can not parse server info: %w", err)
 	}
 
 	return readMetrics(ch, status)
 }
 
-func readMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerInfo) error {
+func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) error {
 	if err := collectSimpleMetrics(ch, status); err != nil {
 		return err
 	}
@@ -206,7 +165,7 @@ func readMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerInfo) erro
 	return nil
 }
 
-func collectSimpleMetrics(ch chan<- prometheus.Metric, status serverinfo.ServerInfo) error {
+func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) error {
 	metrics := []struct {
 		desc  *prometheus.Desc
 		value float64
