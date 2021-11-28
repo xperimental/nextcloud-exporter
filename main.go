@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/xperimental/nextcloud-exporter/internal/client"
 	"github.com/xperimental/nextcloud-exporter/internal/config"
 	"github.com/xperimental/nextcloud-exporter/internal/login"
+	"github.com/xperimental/nextcloud-exporter/internal/metrics"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
@@ -75,21 +76,12 @@ func main() {
 		log.Warn("HTTPS certificate verification is disabled.")
 	}
 
-	collector := newCollector(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
-	if err := prometheus.Register(collector); err != nil {
+	infoClient := client.New(infoURL, cfg.Username, cfg.Password, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
+	if err := metrics.RegisterCollector(log, infoClient); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
 
-	infoMetric := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: metricPrefix + "exporter_info",
-		Help: "Information about the nextcloud-exporter.",
-		ConstLabels: prometheus.Labels{
-			"version": Version,
-			"commit":  GitCommit,
-		},
-	})
-	infoMetric.Set(1)
-	if err := prometheus.Register(infoMetric); err != nil {
+	if err := metrics.RegisterInfoMetric(Version, GitCommit); err != nil {
 		log.Fatalf("Failed to register info metric: %s", err)
 	}
 
