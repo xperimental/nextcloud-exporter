@@ -16,7 +16,7 @@ var (
 
 type InfoClient func() (*serverinfo.ServerInfo, error)
 
-func New(infoURL, username, password string, timeout time.Duration, userAgent string, tlsSkipVerify bool) InfoClient {
+func New(infoURL, username, password, authToken string, timeout time.Duration, userAgent string, tlsSkipVerify bool) InfoClient {
 	client := &http.Client{
 		Timeout: timeout,
 		Transport: &http.Transport{
@@ -33,7 +33,12 @@ func New(infoURL, username, password string, timeout time.Duration, userAgent st
 			return nil, err
 		}
 
-		req.SetBasicAuth(username, password)
+		if authToken == "" {
+			req.SetBasicAuth(username, password)
+		} else {
+			req.Header.Set("NC-Token", authToken)
+		}
+
 		req.Header.Set("User-Agent", userAgent)
 
 		res, err := client.Do(req)
