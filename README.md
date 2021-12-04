@@ -29,6 +29,28 @@ After this there should be a `nextcloud-exporter` binary in your current directo
 
 ## Client credentials
 
+The exporter supports two different approaches for authenticating with the Nextcloud server:
+
+- Token authentication (needs Nextcloud 22 or newer)
+- Username and password
+
+If you have Nextcloud 22 then using the token authentication is recommended, because it does not need a normal user account with admin privileges.
+
+### Token authentication
+
+Nextcloud 22 and newer versions support "token authentication" for the serverinfo. That way, accessing this information does not need a normal user account with admin privileges. You can set the token to anything you like, but the recommendation is to set it to a long random number:
+
+```bash
+# Generate random value (for example using openssl)
+TOKEN=$(openssl rand -hex 32)
+# Set token (using the occ console application)
+occ config:app:set serverinfo token --value "$TOKEN"
+```
+
+You can then use this generated token in the exported configuration instead of username and password.
+
+### Username and password authentication
+
 To access the serverinfo API you will need the credentials of an admin user. It is recommended to create a separate user for that purpose. It's also possible for the exporter to generate an "app password", so that the real user password is never saved to the configuration. This also makes the exporter show up in the security panel of the user as a connected application.
 
 To let the nextcloud-exporter create an app password, start it with the `--login` parameter:
@@ -59,6 +81,7 @@ The login flow needs at least Nextcloud 16 to work.
 $ nextcloud-exporter --help
 Usage of nextcloud-exporter:
   -a, --addr string          Address to listen on for connections. (default ":9205")
+      --auth-token string    Authentication token. Can replace username and password when using Nextcloud 22 or newer.
   -c, --config-file string   Path to YAML configuration file.
       --login                Use interactive login to create app password.
   -p, --password string      Password for connecting to Nextcloud.
@@ -83,11 +106,12 @@ There are three methods of configuring the nextcloud-exporter (higher methods ta
 
 All settings can also be specified through environment variables:
 
-|     Environment variable    | Flag equivalent   |
-| --------------------------: | :---------------- |
+|        Environment variable | Flag equivalent   |
+|----------------------------:|:------------------|
 |          `NEXTCLOUD_SERVER` | --server          |
 |        `NEXTCLOUD_USERNAME` | --username        |
 |        `NEXTCLOUD_PASSWORD` | --password        |
+|      `NEXTCLOUD_AUTH_TOKEN` | --auth-token      |
 |  `NEXTCLOUD_LISTEN_ADDRESS` | --addr            |
 |         `NEXTCLOUD_TIMEOUT` | --timeout         |
 | `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify |
@@ -99,6 +123,9 @@ The `--config-file` option can be used to read the configuration options from a 
 ```yaml
 # required
 server: "https://example.com"
+# required for token authentication
+authToken: "example-token"
+# required for username/password authentication
 username: "example"
 password: "example"
 # optional
