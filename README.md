@@ -36,6 +36,8 @@ The exporter supports two different approaches for authenticating with the Nextc
 
 If you have Nextcloud 22 then using the token authentication is recommended, because it does not need a normal user account with admin privileges.
 
+If both a token and username/password are specified in the configuration, the token will take precedence.
+
 ### Token authentication
 
 Nextcloud 22 and newer versions support "token authentication" for the serverinfo. That way, accessing this information does not need a normal user account with admin privileges. You can set the token to anything you like, but the recommendation is to set it to a long random number:
