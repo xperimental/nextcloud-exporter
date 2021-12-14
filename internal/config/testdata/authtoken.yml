@@ -1,0 +1,2 @@
+server: http://localhost
+authToken: auth-token

@@ -180,6 +180,25 @@ func TestConfig(t *testing.T) {
 			},
 		},
 		{
+			desc: "token file",
+			args: []string{
+				"test",
+				"--config-file",
+				"testdata/authtoken.yml",
+			},
+			env:     map[string]string{},
+			wantErr: nil,
+			wantConfig: Config{
+				ListenAddr:    defaults.ListenAddr,
+				Timeout:       defaults.Timeout,
+				ServerURL:     "http://localhost",
+				Username:      "",
+				Password:      "",
+				AuthToken:     "auth-token",
+				TLSSkipVerify: false,
+			},
+		},
+		{
 			desc: "show help",
 			args: []string{
 				"test",
@@ -311,12 +330,27 @@ func TestConfigValidate(t *testing.T) {
 			wantErr: nil,
 		},
 		{
+			desc: "auth token",
+			config: Config{
+				ServerURL: "https://example.com",
+				AuthToken: "auth-token",
+			},
+			wantErr: nil,
+		},
+		{
 			desc: "no url",
 			config: Config{
 				Username: "exporter",
 				Password: "testpass",
 			},
-			wantErr: errors.New("need to set a server URL"),
+			wantErr: errValidateNoServerURL,
+		},
+		{
+			desc: "auth help",
+			config: Config{
+				ServerURL: "https://example.com",
+			},
+			wantErr: errValidateNoAuth,
 		},
 		{
 			desc: "no username",
@@ -324,7 +358,7 @@ func TestConfigValidate(t *testing.T) {
 				ServerURL: "https://example.com",
 				Password:  "testpass",
 			},
-			wantErr: errors.New("need to provide a username"),
+			wantErr: errValidateNoUsername,
 		},
 		{
 			desc: "no password",
@@ -332,7 +366,7 @@ func TestConfigValidate(t *testing.T) {
 				ServerURL: "https://example.com",
 				Username:  "exporter",
 			},
-			wantErr: errors.New("need to provide a password"),
+			wantErr: errValidateNoPassword,
 		},
 	}
 
