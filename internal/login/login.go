@@ -1,6 +1,7 @@
 package login
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -55,7 +56,7 @@ type Client struct {
 }
 
 // Init creates a new LoginClient. The session can then be started using StartInteractive.
-func Init(log logrus.FieldLogger, userAgent, serverURL string) *Client {
+func Init(log logrus.FieldLogger, userAgent, serverURL string, tlsSkipVerify bool) *Client {
 	return &Client{
 		log:       log,
 		userAgent: userAgent,
@@ -63,6 +64,11 @@ func Init(log logrus.FieldLogger, userAgent, serverURL string) *Client {
 
 		client: &http.Client{
 			Timeout: 30 * time.Second,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: tlsSkipVerify,
+				},
+			},
 		},
 		sleepFunc: func() { time.Sleep(pollInterval) },
 	}

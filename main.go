@@ -55,7 +55,7 @@ func main() {
 		if cfg.ServerURL == "" {
 			log.Fatalf("Need to specify --server for login.")
 		}
-		loginClient := login.Init(log, userAgent, cfg.ServerURL)
+		loginClient := login.Init(log, userAgent, cfg.ServerURL, cfg.TLSSkipVerify)
 
 		log.Infof("Starting interactive login on: %s", cfg.ServerURL)
 		if err := loginClient.StartInteractive(); err != nil {
