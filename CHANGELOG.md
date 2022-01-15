@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2022-01-15
+
 ### Added
 
 - Flag for showing version information
@@ -55,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[0.5.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.5.0
 [0.4.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.4.0
 [0.3.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.3.0
 [0.2.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.2.0
