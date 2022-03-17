@@ -13,7 +13,7 @@ RUN go mod download
 RUN go mod verify
 
 COPY . /build/
-RUN make
+RUN make build-binary
 
 FROM --platform=$TARGETPLATFORM docker.io/library/busybox
 LABEL maintainer="Robert Jacob <xperimental@solidproject.de>"
