@@ -1,4 +1,10 @@
-FROM golang:1.17.5 AS builder
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.17.5 AS builder
+
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV GOOS=$TARGETOS
+ENV GOARCH=$TARGETARCH
 
 WORKDIR /build
 
@@ -9,7 +15,7 @@ RUN go mod verify
 COPY . /build/
 RUN make
 
-FROM busybox
+FROM --platform=$TARGETPLATFORM docker.io/library/busybox
 LABEL maintainer="Robert Jacob <xperimental@solidproject.de>"
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt

@@ -40,7 +40,7 @@ install:
 
 .PHONY: image
 image:
-	docker build -t "xperimental/nextcloud-exporter:$(DOCKER_TAG)" .
+	docker buildx build -t "xperimental/nextcloud-exporter:$(DOCKER_TAG)" --load .
 
 .PHONY: all-images
 all-images:
