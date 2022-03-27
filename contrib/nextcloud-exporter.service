@@ -1,10 +1,11 @@
 [Unit]
 Description=Prometheus exporter for Nextcloud metrics
+Documentation=https://github.com/xperimental/nextcloud-exporter
 After=network.target nss-lookup.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/nextcloud-exporter -c /etc/nextcloud-exporter.yml
+ExecStart=/usr/bin/nextcloud-exporter
 User=nextcloud-exporter
 Group=nextcloud-exporter
 PrivateTmp=true
@@ -12,6 +13,14 @@ ProtectHome=true
 ProtectSystem=full
 Restart=on-failure
 RestartSec=20
+
+Environment=NEXTCLOUD_SERVER=https://example.com
+Environment=NEXTCLOUD_AUTH_TOKEN=
+Environment=NEXTCLOUD_LISTEN_ADDRESS=127.0.0.1:9205
+#Environment=NEXTCLOUD_USERNAME=
+#Environment=NEXTCLOUD_PASSWORD=
+#Environment=NEXTCLOUD_TIMEOUT=
+#Environment=NEXTCLOUD_TLS_SKIP_VERIFY=
 
 [Install]
 WantedBy=multi-user.target
