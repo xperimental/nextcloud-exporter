@@ -136,13 +136,18 @@ timeout: "5s"
 tlsSkipVerify: false
 ```
 
-### Password file
+### Password / token file
 
-Optionally the password can be read from a separate file instead of directly from the input methods above. This can be achieved by setting the password to the path of the password file prefixed with an "@", for example:
+Optionally the password or auth token can be read from a separate file instead of directly from the input methods above. This can be achieved by setting the password / token to the path of the password file prefixed with an "@", for example:
 
 ```bash
 nextcloud-exporter -c config-without-password.yml -p @/path/to/passwordfile
 ```
+or
+```bash
+nextcloud-exporter -c config-without-token.yml --auth-token @/path/to/tokenfile
+```
+This also works when configuring via environment variables, which can be used for Docker secrets.
 
 ## Other information
 
