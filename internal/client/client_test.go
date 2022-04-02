@@ -98,6 +98,22 @@ func TestClient(t *testing.T) {
 			wantErr:  ErrNotAuthorized,
 		},
 		{
+			desc:  "simple info",
+			token: wantToken,
+			handler: func(t *testing.T) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+					fmt.Fprintln(w, `{"ocs": {"meta": {"status": "OK", "statuscode": 200}}}`)
+				})
+			},
+			wantInfo: &serverinfo.ServerInfo{
+				Meta: serverinfo.Meta{
+					Status:     "OK",
+					StatusCode: http.StatusOK,
+				},
+			},
+			wantErr: nil,
+		},
+		{
 			desc:     "parse error",
 			password: "",
 			token:    "",
