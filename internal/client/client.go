@@ -10,9 +10,11 @@ import (
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
-var (
-	ErrNotAuthorized = errors.New("wrong credentials")
+const (
+	nextcloudTokenHeader = "NC-Token"
 )
+
+var ErrNotAuthorized = errors.New("wrong credentials")
 
 type InfoClient func() (*serverinfo.ServerInfo, error)
 
@@ -36,7 +38,7 @@ func New(infoURL, username, password, authToken string, timeout time.Duration, u
 		if authToken == "" {
 			req.SetBasicAuth(username, password)
 		} else {
-			req.Header.Set("NC-Token", authToken)
+			req.Header.Set(nextcloudTokenHeader, authToken)
 		}
 
 		req.Header.Set("User-Agent", userAgent)
