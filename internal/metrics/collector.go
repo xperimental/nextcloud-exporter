@@ -68,7 +68,7 @@ var (
 	databaseSizeDesc = prometheus.NewDesc(
 		metricPrefix+"database_size_bytes",
 		"Size of database in bytes as reported from engine.",
-		[]string{"version", "type"}, nil)
+		nil, nil)
 )
 
 type nextcloudCollector struct {
@@ -148,16 +148,6 @@ func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) err
 		return err
 	}
 
-	dbMetric, err := prometheus.NewConstMetric(databaseSizeDesc,
-		prometheus.GaugeValue,
-		float64(status.Data.Server.Database.Size),
-		status.Data.Server.Database.Version,
-		status.Data.Server.Database.Type)
-	if err != nil {
-		return err
-	}
-	ch <- dbMetric
-
 	systemInfo := []string{
 		status.Data.Nextcloud.System.Version,
 	}
@@ -211,6 +201,10 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 		{
 			desc:  phpMaxUploadSizeDesc,
 			value: float64(status.Data.Server.PHP.UploadMaxFilesize),
+		},
+		{
+			desc:  databaseSizeDesc,
+			value: float64(status.Data.Server.Database.Size),
 		},
 	}
 	for _, m := range metrics {
