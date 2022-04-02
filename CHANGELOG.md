@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2022-04-02
+
 ### Fixed
 
 - Updated Prometheus client library for CVE-2022-21698
@@ -61,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[0.5.1]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.5.1
 [0.5.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.5.0
 [0.4.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.4.0
 [0.3.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.3.0
