@@ -65,6 +65,10 @@ var (
 		metricPrefix+"php_upload_max_size_bytes",
 		"Configured maximum upload size in bytes.",
 		nil, nil)
+	dbInfoDesc = prometheus.NewDesc(
+		metricPrefix+"database_info",
+		"Contains meta information about the database as labels. Value is always 1.",
+		[]string{"version", "type"}, nil)
 	databaseSizeDesc = prometheus.NewDesc(
 		metricPrefix+"database_size_bytes",
 		"Size of database in bytes as reported from engine.",
@@ -159,6 +163,14 @@ func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) err
 		status.Data.Server.PHP.Version,
 	}
 	if err := collectInfoMetric(ch, phpInfoDesc, phpInfo); err != nil {
+		return err
+	}
+
+	dbInfo := []string{
+		status.Data.Server.Database.Version,
+		status.Data.Server.Database.Type,
+	}
+	if err := collectInfoMetric(ch, phpInfoDesc, dbInfo); err != nil {
 		return err
 	}
 
