@@ -14,9 +14,7 @@ const (
 	nextcloudTokenHeader = "NC-Token"
 )
 
-var (
-	ErrNotAuthorized = errors.New("wrong credentials")
-)
+var ErrNotAuthorized = errors.New("wrong credentials")
 
 type InfoClient func() (*serverinfo.ServerInfo, error)
 

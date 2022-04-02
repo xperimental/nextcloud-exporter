@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"net/url"
 	"testing"
 	"time"
 
@@ -14,15 +13,6 @@ func testEnv(env map[string]string) func(string) string {
 	return func(key string) string {
 		return env[key]
 	}
-}
-
-func mustURL(raw string) *url.URL {
-	u, err := url.Parse(raw)
-	if err != nil {
-		panic(err)
-	}
-
-	return u
 }
 
 func TestConfig(t *testing.T) {

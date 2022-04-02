@@ -3,13 +3,14 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/google/go-cmp/cmp"
-	"github.com/xperimental/nextcloud-exporter/internal/testutil"
-	"github.com/xperimental/nextcloud-exporter/serverinfo"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/xperimental/nextcloud-exporter/internal/testutil"
+	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
 
 func TestClient(t *testing.T) {
