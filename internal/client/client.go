@@ -52,14 +52,14 @@ func New(infoURL, username, password, authToken string, timeout time.Duration, u
 		}
 		defer res.Body.Close()
 
-		if res.StatusCode == http.StatusUnauthorized {
+		switch res.StatusCode {
+		case http.StatusOK:
+			break
+		case http.StatusUnauthorized:
 			return nil, ErrNotAuthorized
-		}
-		if res.StatusCode == http.StatusTooManyRequests {
+		case http.StatusTooManyRequests:
 			return nil, ErrRatelimit
-		}
-
-		if res.StatusCode != http.StatusOK {
+		default:
 			return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 		}
 
