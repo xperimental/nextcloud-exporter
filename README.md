@@ -136,13 +136,20 @@ timeout: "5s"
 tlsSkipVerify: false
 ```
 
-### Password file
+### Loading Credentials from Files
 
-Optionally the password can be read from a separate file instead of directly from the input methods above. This can be achieved by setting the password to the path of the password file prefixed with an "@", for example:
+Both the authentication token and the password can optionally be read from a separate file instead of directly from the input methods above.
+
+This can be achieved by setting the value to the path of the file prefixed with an "@", for example:
 
 ```bash
+# Authentication token
+nextcloud-exporter -c config-without-token.yml --auth-token @/path/to/tokenfile
+# Password
 nextcloud-exporter -c config-without-password.yml -p @/path/to/passwordfile
 ```
+
+This also works when the password or token is set using one of the other configuration modes (configuration file or environment variables).
 
 ## Other information
 
