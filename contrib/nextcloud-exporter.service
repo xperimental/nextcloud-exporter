@@ -1,5 +1,6 @@
 [Unit]
 Description=Prometheus exporter for Nextcloud metrics
+Documentation=https://github.com/xperimental/nextcloud-exporter
 After=network.target nss-lookup.target
 
 [Service]
