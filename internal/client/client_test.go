@@ -125,6 +125,15 @@ func TestClient(t *testing.T) {
 			wantInfo: nil,
 			wantErr:  errors.New("can not parse server info: EOF"),
 		},
+		{
+			desc: "ratelimit",
+			handler: func(t *testing.T) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+					w.WriteHeader(http.StatusTooManyRequests)
+				})
+			},
+			wantErr: ErrRatelimit,
+		},
 	}
 
 	for _, tc := range tt {
