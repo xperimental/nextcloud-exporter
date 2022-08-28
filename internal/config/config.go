@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -268,7 +267,7 @@ func mergeConfig(base, override Config) Config {
 }
 
 func readPasswordFile(fileName string) (string, error) {
-	bytes, err := ioutil.ReadFile(fileName)
+	bytes, err := os.ReadFile(fileName)
 	if err != nil {
 		return "", err
 	}
