@@ -51,8 +51,16 @@ var (
 		[]string{"direction"}, nil)
 	activeUsersDesc = prometheus.NewDesc(
 		metricPrefix+"active_users_total",
-		"Number of active users.",
-		[]string{"window"}, nil)
+		"Number of active users for the last five minutes.",
+		nil, nil)
+	hourlyActiveUsersDesc = prometheus.NewDesc(
+		metricPrefix+"active_users_hourly_total",
+		"Number of active users in the last hour.",
+		nil, nil)
+	dailyActiveUsersDesc = prometheus.NewDesc(
+		metricPrefix+"active_users_daily_total",
+		"Number of active users in the last 24 hours.",
+		nil, nil)
 	phpInfoDesc = prometheus.NewDesc(
 		metricPrefix+"php_info",
 		"Contains meta information about PHP as labels. Value is always 1.",
@@ -106,6 +114,8 @@ func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- sharesDesc
 	ch <- federationsDesc
 	ch <- activeUsersDesc
+	ch <- hourlyActiveUsersDesc
+	ch <- dailyActiveUsersDesc
 }
 
 func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
@@ -145,10 +155,6 @@ func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) err
 	}
 
 	if err := collectFederatedShares(ch, status.Data.Nextcloud.Shares); err != nil {
-		return err
-	}
-
-	if err := collectActiveUsers(ch, status.Data.ActiveUsers); err != nil {
 		return err
 	}
 
@@ -195,6 +201,18 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 			value: float64(status.Data.Nextcloud.System.FreeSpace),
 		},
 		{
+			desc:  activeUsersDesc,
+			value: float64(status.Data.ActiveUsers.Last5Minutes),
+		},
+		{
+			desc:  hourlyActiveUsersDesc,
+			value: float64(status.Data.ActiveUsers.LastHour),
+		},
+		{
+			desc:  dailyActiveUsersDesc,
+			value: float64(status.Data.ActiveUsers.LastDay),
+		},
+		{
 			desc:  phpMemoryLimitDesc,
 			value: float64(status.Data.Server.PHP.MemoryLimit),
 		},
@@ -234,15 +252,6 @@ func collectFederatedShares(ch chan<- prometheus.Metric, shares serverinfo.Share
 	values["received"] = float64(shares.FedReceived)
 
 	return collectMap(ch, federationsDesc, values)
-}
-
-func collectActiveUsers(ch chan<- prometheus.Metric, users serverinfo.ActiveUsers) error {
-	values := make(map[string]float64)
-	values["5m"] = float64(users.Last5Minutes)
-	values["1h"] = float64(users.LastHour)
-	values["1d"] = float64(users.LastDay)
-
-	return collectMap(ch, activeUsersDesc, values)
 }
 
 func collectMap(ch chan<- prometheus.Metric, desc *prometheus.Desc, labelValueMap map[string]float64) error {
