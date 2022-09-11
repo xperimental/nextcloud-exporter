@@ -14,7 +14,10 @@ const (
 	nextcloudTokenHeader = "NC-Token"
 )
 
-var ErrNotAuthorized = errors.New("wrong credentials")
+var (
+	ErrNotAuthorized = errors.New("wrong credentials")
+	ErrRatelimit     = errors.New("too many requests")
+)
 
 type InfoClient func() (*serverinfo.ServerInfo, error)
 
@@ -49,11 +52,14 @@ func New(infoURL, username, password, authToken string, timeout time.Duration, u
 		}
 		defer res.Body.Close()
 
-		if res.StatusCode == http.StatusUnauthorized {
+		switch res.StatusCode {
+		case http.StatusOK:
+			break
+		case http.StatusUnauthorized:
 			return nil, ErrNotAuthorized
-		}
-
-		if res.StatusCode != http.StatusOK {
+		case http.StatusTooManyRequests:
+			return nil, ErrRatelimit
+		default:
 			return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 		}
 
