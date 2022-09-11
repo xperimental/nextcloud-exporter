@@ -183,6 +183,8 @@ These metrics are exported by `nextcloud-exporter`:
 
 | name                                   | description                                                            |
 |----------------------------------------|------------------------------------------------------------------------|
+| nextcloud_active_users_daily_total     | Number of active users in the last 24 hours                            |
+| nextcloud_active_users_hourly_total    | Number of active users in the last hour                                |
 | nextcloud_active_users_total           | Number of active users for the last five minutes                       |
 | nextcloud_apps_installed_total         | Number of currently installed apps                                     |
 | nextcloud_apps_updates_available_total | Number of apps that have available updates                             |

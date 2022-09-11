@@ -53,6 +53,14 @@ var (
 		metricPrefix+"active_users_total",
 		"Number of active users for the last five minutes.",
 		nil, nil)
+	hourlyActiveUsersDesc = prometheus.NewDesc(
+		metricPrefix+"active_users_hourly_total",
+		"Number of active users in the last hour.",
+		nil, nil)
+	dailyActiveUsersDesc = prometheus.NewDesc(
+		metricPrefix+"active_users_daily_total",
+		"Number of active users in the last 24 hours.",
+		nil, nil)
 	phpInfoDesc = prometheus.NewDesc(
 		metricPrefix+"php_info",
 		"Contains meta information about PHP as labels. Value is always 1.",
@@ -110,6 +118,8 @@ func (c *nextcloudCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- sharesDesc
 	ch <- federationsDesc
 	ch <- activeUsersDesc
+	ch <- hourlyActiveUsersDesc
+	ch <- dailyActiveUsersDesc
 }
 
 func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
@@ -205,6 +215,14 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 		{
 			desc:  activeUsersDesc,
 			value: float64(status.Data.ActiveUsers.Last5Minutes),
+		},
+		{
+			desc:  hourlyActiveUsersDesc,
+			value: float64(status.Data.ActiveUsers.LastHour),
+		},
+		{
+			desc:  dailyActiveUsersDesc,
+			value: float64(status.Data.ActiveUsers.LastDay),
 		},
 		{
 			desc:  phpMemoryLimitDesc,
