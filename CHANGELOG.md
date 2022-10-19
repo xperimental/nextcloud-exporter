@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2022-10-19
+
+### Added
+
+- New database info metric (`nextcloud_database_info`) containing type and version
+- New metrics for hourly and daily active users
+- Additional label on `nextcloud_scrape_errors_total` for errors due to rate-limiting
+- Additional labels for email and room shares on `nextcloud_shares_total`
+
 ## [0.5.1] - 2022-04-02
 
 ### Fixed
