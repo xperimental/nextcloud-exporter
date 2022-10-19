@@ -9,8 +9,8 @@ A [prometheus](https://prometheus.io) exporter for getting some metrics of a nex
 The preferred way to use `nextcloud-exporter` is by running the provided Docker image. It is currently provided on Docker Hub and GitHub Container Registry:
 
 ```plain
-docker pull xperimental/nextcloud-exporter:latest
 docker pull ghcr.io/xperimental/nextcloud-exporter:latest
+docker pull xperimental/nextcloud-exporter:latest
 ```
 
 In addition to the `latest` tag which points to the version currently in the `master` branch, tagged versions are also available.
@@ -72,7 +72,7 @@ When the login process is done, it is possible to disable filesystem access for 
 The interactive login can also be done using a Docker container:
 
 ```bash
-docker run --rm -it xperimental/nextcloud-exporter --login --server https://nextcloud.example.com
+docker run --rm -it ghcr.io/xperimental/nextcloud-exporter --login --server https://nextcloud.example.com
 ```
 
 The login flow needs at least Nextcloud 16 to work.
@@ -198,7 +198,7 @@ These metrics are exported by `nextcloud-exporter`:
 | nextcloud_php_upload_max_size_bytes    | Configured maximum upload size in bytes                                |
 | nextcloud_scrape_errors_total          | Counts the number of scrape errors by this collector                   |
 | nextcloud_shares_federated_total       | Number of federated shares by direction `sent` / `received`            |
-| nextcloud_shares_total                 | Number of shares by type: <br> `authlink`: shared password protected links <br> `group`: shared groups <br>`link`: all shared links <br> `user`: shared users |
+| nextcloud_shares_total                 | Number of shares by type: <br> `authlink`: shared password protected links <br> `group`: shared groups <br>`link`: all shared links <br> `user`: shared users <br> `mail`: shared by mail <br> `room`: shared with room |
 | nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1.|
 | nextcloud_up                           | Indicates if the metrics could be scraped by the exporter: <br>`1`: successful<br>`0`: unsuccessful (server down, server/endpoint not reachable, invalid credentials, ...) |
 | nextcloud_users_total                  | Number of users of the instance                                        |

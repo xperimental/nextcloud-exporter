@@ -258,7 +258,7 @@ func collectShares(ch chan<- prometheus.Metric, shares serverinfo.Shares) error 
 	values["authlink"] = float64(shares.SharesLink - shares.SharesLinkNoPassword)
 	values["link"] = float64(shares.SharesLink)
 	values["mail"] = float64(shares.SharesMail)
-	values["root"] = float64(shares.SharesRoom)
+	values["room"] = float64(shares.SharesRoom)
 
 	return collectMap(ch, sharesDesc, values)
 }
