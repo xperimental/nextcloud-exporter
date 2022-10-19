@@ -141,6 +141,8 @@ type Shares struct {
 	SharesGroups         uint `json:"num_shares_groups"`
 	SharesLink           uint `json:"num_shares_link"`
 	SharesLinkNoPassword uint `json:"num_shares_link_no_password"`
+	SharesMail           uint `json:"num_shares_mail"`
+	SharesRoom           uint `json:"num_shares_room"`
 	FedSent              uint `json:"num_fed_shares_sent"`
 	FedReceived          uint `json:"num_fed_shares_received"`
 	// <permissions_0_1>2</permissions_0_1>
