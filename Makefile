@@ -7,6 +7,8 @@ GIT_COMMIT := $(shell git rev-parse HEAD)
 DOCKER_REPO ?= xperimental/nextcloud-exporter
 DOCKER_TAG ?= dev
 
+include .bingo/Variables.mk
+
 .PHONY: all
 all: test build-binary
 
@@ -15,8 +17,8 @@ test:
 	$(GO_CMD) test -cover ./...
 
 .PHONY: lint
-lint:
-	golangci-lint run --fix
+lint: $(GOLANGCI_LINT)
+	$(GOLANGCI_LINT) run --fix
 
 .PHONY: build-binary
 build-binary:
@@ -41,6 +43,10 @@ image:
 .PHONY: all-images
 all-images:
 	docker buildx build -t "ghcr.io/$(DOCKER_REPO):$(DOCKER_TAG)" -t "docker.io/$(DOCKER_REPO):$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
+
+.PHONY: tools
+tools: $(BINGO) $(GOLANGCI_LINT)
+	@echo Tools built.
 
 .PHONY: clean
 clean:
