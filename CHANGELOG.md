@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `latest` Docker tag now points to most recent release and `master` points to the build from the default branch
+
 ## [0.6.0] - 2022-10-19
 
 ### Added
