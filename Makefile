@@ -7,10 +7,10 @@ GIT_COMMIT := $(shell git rev-parse HEAD)
 DOCKER_REPO ?= xperimental/nextcloud-exporter
 DOCKER_TAG ?= dev
 
-include .bingo/Variables.mk
-
 .PHONY: all
 all: test build-binary
+
+include .bingo/Variables.mk
 
 .PHONY: test
 test:
