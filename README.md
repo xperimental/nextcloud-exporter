@@ -1,6 +1,6 @@
 # nextcloud-exporter
 
-A [prometheus](https://prometheus.io) exporter for getting some metrics of a nextcloud server instance.
+A [prometheus](https://prometheus.io) exporter for getting some metrics of a [Nextcloud](https://nextcloud.com/) server instance.
 
 ## Installation
 
