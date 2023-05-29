@@ -8,14 +8,16 @@ A [prometheus](https://prometheus.io) exporter for getting some metrics of a [Ne
 
 The preferred way to use `nextcloud-exporter` is by running the provided Docker image. It is currently provided on Docker Hub and GitHub Container Registry:
 
-```plain
-docker pull ghcr.io/xperimental/nextcloud-exporter:latest
-docker pull xperimental/nextcloud-exporter:latest
-```
+- [`ghcr.io/xperimental/nextcloud-exporter`](https://github.com/xperimental/nextcloud-exporter/pkgs/container/nextcloud-exporter)
+- [`xperimental/nextcloud-exporter`](https://hub.docker.com/r/xperimental/nextcloud-exporter/)
 
-In addition to the `latest` tag which points to the version currently in the `master` branch, tagged versions are also available.
+The following tags are available:
 
-### From Source
+- `x.y.z` pointing to the release with that version
+- `latest` pointing to the most recent released version
+- `master` pointing to the latest build from the default branch
+
+### Build from Source
 
 If you have a recent (>= 1.16) working Go installation and GNU Make, getting the binary should be as simple as
 

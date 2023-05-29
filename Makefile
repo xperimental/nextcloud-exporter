@@ -4,12 +4,8 @@ GO_CMD := CGO_ENABLED=0 $(GO)
 GIT_VERSION := $(shell git describe --tags --dirty)
 VERSION := $(GIT_VERSION:v%=%)
 GIT_COMMIT := $(shell git rev-parse HEAD)
-GITHUB_REF ?= refs/heads/master
-DOCKER_TAG != if [[ "$(GITHUB_REF)" == "refs/heads/master" ]]; then \
-		echo "latest"; \
-	else \
-		echo "$(VERSION)"; \
-	fi
+DOCKER_REPO ?= xperimental/nextcloud-exporter
+DOCKER_TAG ?= dev
 
 .PHONY: all
 all: test build-binary
@@ -40,11 +36,11 @@ install:
 
 .PHONY: image
 image:
-	docker build -t "xperimental/nextcloud-exporter:$(DOCKER_TAG)" .
+	docker buildx build -t "ghcr.io/$(DOCKER_REPO):$(DOCKER_TAG)" --load .
 
 .PHONY: all-images
 all-images:
-	docker buildx build -t "ghcr.io/xperimental/nextcloud-exporter:$(DOCKER_TAG)" -t "xperimental/nextcloud-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
+	docker buildx build -t "ghcr.io/$(DOCKER_REPO):$(DOCKER_TAG)" -t "docker.io/$(DOCKER_REPO):$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
 
 .PHONY: clean
 clean:
