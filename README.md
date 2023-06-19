@@ -29,6 +29,9 @@ make
 
 After this there should be a `nextcloud-exporter` binary in your current directory.
 
+## Dashboards
+There is an example dashboard named [nextcloud-exporter-dashboard.json](nextcloud-exporter-dashboard.json). Feel free to change it as you see fit.
+
 ## Client credentials
 
 The exporter supports two different approaches for authenticating with the Nextcloud server:
