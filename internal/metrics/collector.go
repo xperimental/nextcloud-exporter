@@ -42,6 +42,26 @@ var (
 		metricPrefix+"free_space_bytes",
 		"Free disk space in data directory in bytes.",
 		nil, nil)
+	cpuLoad0Desc = prometheus.NewDesc(
+		metricPrefix+"cpu_load_0",
+		"CPU load average, first segment.",
+		nil, nil)
+	cpuLoad1Desc = prometheus.NewDesc(
+		metricPrefix+"cpu_load_1",
+		"CPU load average, second segment.",
+		nil, nil)
+	cpuLoad2Desc = prometheus.NewDesc(
+		metricPrefix+"cpu_load_2",
+		"CPU load average, third segment.",
+		nil, nil)
+	memTotalDesc = prometheus.NewDesc(
+		metricPrefix+"mem_total",
+		"Total memory in kilobytes.",
+		nil, nil)
+	memFreeDesc = prometheus.NewDesc(
+		metricPrefix+"mem_free",
+		"Free memory in kilobytes.",
+		nil, nil)
 	sharesDesc = prometheus.NewDesc(
 		metricPrefix+"shares_total",
 		"Number of shares by type.",
@@ -214,6 +234,26 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 		{
 			desc:  freeSpaceDesc,
 			value: float64(status.Data.Nextcloud.System.FreeSpace),
+		},
+		{
+			desc:  cpuLoad0Desc,
+			value: float64(status.Data.Nextcloud.System.CpuLoad[0]),
+		},
+		{
+			desc:  cpuLoad1Desc,
+			value: float64(status.Data.Nextcloud.System.CpuLoad[1]),
+		},
+		{
+			desc:  cpuLoad2Desc,
+			value: float64(status.Data.Nextcloud.System.CpuLoad[2]),
+		},
+		{
+			desc:  memTotalDesc,
+			value: float64(status.Data.Nextcloud.System.MemTotal),
+		},
+		{
+			desc:  memFreeDesc,
+			value: float64(status.Data.Nextcloud.System.MemFree),
 		},
 		{
 			desc:  activeUsersDesc,
