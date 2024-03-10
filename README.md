@@ -87,6 +87,7 @@ Usage of nextcloud-exporter:
   -a, --addr string          Address to listen on for connections. (default ":9205")
       --auth-token string    Authentication token. Can replace username and password when using Nextcloud 22 or newer.
   -c, --config-file string   Path to YAML configuration file.
+      --info-skip-apps       Skip metrics for installed apps and app updates.
       --login                Use interactive login to create app password.
   -p, --password string      Password for connecting to Nextcloud.
   -s, --server string        URL to Nextcloud server.
@@ -119,6 +120,7 @@ All settings can also be specified through environment variables:
 |  `NEXTCLOUD_LISTEN_ADDRESS` | --addr            |
 |         `NEXTCLOUD_TIMEOUT` | --timeout         |
 | `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify |
+|  `NEXTCLOUD_INFO_SKIP_APPS` | --info-skip-apps  |
 
 #### Configuration file
 
@@ -136,6 +138,7 @@ password: "example"
 listenAddress: ":9205"
 timeout: "5s"
 tlsSkipVerify: false
+infoSkipApps: false
 ```
 
 ### Loading Credentials from Files
@@ -183,24 +186,24 @@ scrape_configs:
 
 These metrics are exported by `nextcloud-exporter`:
 
-| name                                   | description                                                            |
-|----------------------------------------|------------------------------------------------------------------------|
-| nextcloud_active_users_daily_total     | Number of active users in the last 24 hours                            |
-| nextcloud_active_users_hourly_total    | Number of active users in the last hour                                |
-| nextcloud_active_users_total           | Number of active users for the last five minutes                       |
-| nextcloud_apps_installed_total         | Number of currently installed apps                                     |
-| nextcloud_apps_updates_available_total | Number of apps that have available updates                             |
-| nextcloud_database_info                | Contains meta information about the database as labels. Value is always 1. |
-| nextcloud_database_size_bytes          | Size of database in bytes as reported from engine                      |
-| nextcloud_exporter_info                | Contains meta information of the exporter. Value is always 1.          |
-| nextcloud_files_total                  | Number of files served by the instance                                 |
-| nextcloud_free_space_bytes             | Free disk space in data directory in bytes                             |
-| nextcloud_php_info                     | Contains meta information about PHP as labels. Value is always 1.      |
-| nextcloud_php_memory_limit_bytes       | Configured PHP memory limit in bytes                                   |
-| nextcloud_php_upload_max_size_bytes    | Configured maximum upload size in bytes                                |
-| nextcloud_scrape_errors_total          | Counts the number of scrape errors by this collector                   |
-| nextcloud_shares_federated_total       | Number of federated shares by direction `sent` / `received`            |
+| name                                   | description                                                                                                                                                                                                             |
+|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| nextcloud_active_users_daily_total     | Number of active users in the last 24 hours                                                                                                                                                                             |
+| nextcloud_active_users_hourly_total    | Number of active users in the last hour                                                                                                                                                                                 |
+| nextcloud_active_users_total           | Number of active users for the last five minutes                                                                                                                                                                        |
+| nextcloud_apps_installed_total         | Number of currently installed apps                                                                                                                                                                                      |
+| nextcloud_apps_updates_available_total | Number of apps that have available updates                                                                                                                                                                              |
+| nextcloud_database_info                | Contains meta information about the database as labels. Value is always 1.                                                                                                                                              |
+| nextcloud_database_size_bytes          | Size of database in bytes as reported from engine                                                                                                                                                                       |
+| nextcloud_exporter_info                | Contains meta information of the exporter. Value is always 1.                                                                                                                                                           |
+| nextcloud_files_total                  | Number of files served by the instance                                                                                                                                                                                  |
+| nextcloud_free_space_bytes             | Free disk space in data directory in bytes                                                                                                                                                                              |
+| nextcloud_php_info                     | Contains meta information about PHP as labels. Value is always 1.                                                                                                                                                       |
+| nextcloud_php_memory_limit_bytes       | Configured PHP memory limit in bytes                                                                                                                                                                                    |
+| nextcloud_php_upload_max_size_bytes    | Configured maximum upload size in bytes                                                                                                                                                                                 |
+| nextcloud_scrape_errors_total          | Counts the number of scrape errors by this collector                                                                                                                                                                    |
+| nextcloud_shares_federated_total       | Number of federated shares by direction `sent` / `received`                                                                                                                                                             |
 | nextcloud_shares_total                 | Number of shares by type: <br> `authlink`: shared password protected links <br> `group`: shared groups <br>`link`: all shared links <br> `user`: shared users <br> `mail`: shared by mail <br> `room`: shared with room |
-| nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1.|
-| nextcloud_up                           | Indicates if the metrics could be scraped by the exporter: <br>`1`: successful<br>`0`: unsuccessful (server down, server/endpoint not reachable, invalid credentials, ...) |
-| nextcloud_users_total                  | Number of users of the instance                                        |
+| nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1.                                                                                                                                                 |
+| nextcloud_up                           | Indicates if the metrics could be scraped by the exporter: <br>`1`: successful<br>`0`: unsuccessful (server down, server/endpoint not reachable, invalid credentials, ...)                                              |
+| nextcloud_users_total                  | Number of users of the instance                                                                                                                                                                                         |

@@ -21,6 +21,7 @@ const (
 	envPassword      = envPrefix + "PASSWORD"
 	envAuthToken     = envPrefix + "AUTH_TOKEN"
 	envTLSSkipVerify = envPrefix + "TLS_SKIP_VERIFY"
+	envInfoSkipApps  = envPrefix + "INFO_SKIP_APPS"
 )
 
 // RunMode signals what the main application should do after parsing the options.
@@ -61,6 +62,7 @@ type Config struct {
 	Password      string        `yaml:"password"`
 	AuthToken     string        `yaml:"authToken"`
 	TLSSkipVerify bool          `yaml:"tlsSkipVerify"`
+	InfoSkipApps  bool          `yaml:"infoSkipApps"`
 	RunMode       RunMode
 }
 
@@ -162,6 +164,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
 	flags.StringVar(&result.AuthToken, "auth-token", defaults.AuthToken, "Authentication token. Can replace username and password when using Nextcloud 22 or newer.")
 	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
+	flags.BoolVar(&result.InfoSkipApps, "info-skip-apps", defaults.InfoSkipApps, "Skip metrics for installed apps and app updates.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
@@ -212,6 +215,15 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		tlsSkipVerify = value
 	}
 
+	infoSkipApps := false
+	if rawValue := getEnv(envInfoSkipApps); rawValue != "" {
+		value, err := strconv.ParseBool(rawValue)
+		if err != nil {
+			return Config{}, fmt.Errorf("can not parse value for %q: %s", envInfoSkipApps, rawValue)
+		}
+		infoSkipApps = value
+	}
+
 	result := Config{
 		ListenAddr:    getEnv(envListenAddress),
 		ServerURL:     getEnv(envServerURL),
@@ -219,6 +231,7 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		Password:      getEnv(envPassword),
 		AuthToken:     getEnv(envAuthToken),
 		TLSSkipVerify: tlsSkipVerify,
+		InfoSkipApps:  infoSkipApps,
 	}
 
 	if raw := getEnv(envTimeout); raw != "" {
@@ -261,6 +274,10 @@ func mergeConfig(base, override Config) Config {
 
 	if override.TLSSkipVerify {
 		result.TLSSkipVerify = override.TLSSkipVerify
+	}
+
+	if override.InfoSkipApps {
+		result.InfoSkipApps = override.InfoSkipApps
 	}
 
 	return result
