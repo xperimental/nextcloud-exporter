@@ -21,7 +21,7 @@ const (
 	envPassword      = envPrefix + "PASSWORD"
 	envAuthToken     = envPrefix + "AUTH_TOKEN"
 	envTLSSkipVerify = envPrefix + "TLS_SKIP_VERIFY"
-	envInfoSkipApps  = envPrefix + "INFO_SKIP_APPS"
+	envInfoApps      = envPrefix + "INFO_APPS"
 )
 
 // RunMode signals what the main application should do after parsing the options.
@@ -62,8 +62,13 @@ type Config struct {
 	Password      string        `yaml:"password"`
 	AuthToken     string        `yaml:"authToken"`
 	TLSSkipVerify bool          `yaml:"tlsSkipVerify"`
-	InfoSkipApps  bool          `yaml:"infoSkipApps"`
+	Info          InfoConfig    `yaml:"info"`
 	RunMode       RunMode
+}
+
+// InfoConfig contains configuration related to what information is read from serverinfo.
+type InfoConfig struct {
+	Apps bool `yaml:"apps"`
 }
 
 var (
@@ -164,7 +169,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVarP(&result.Password, "password", "p", defaults.Password, "Password for connecting to Nextcloud.")
 	flags.StringVar(&result.AuthToken, "auth-token", defaults.AuthToken, "Authentication token. Can replace username and password when using Nextcloud 22 or newer.")
 	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
-	flags.BoolVar(&result.InfoSkipApps, "info-skip-apps", defaults.InfoSkipApps, "Skip metrics for installed apps and app updates.")
+	flags.BoolVar(&result.Info.Apps, "enable-info-apps", defaults.Info.Apps, "Enable gathering of apps-related metrics.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
@@ -215,13 +220,13 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		tlsSkipVerify = value
 	}
 
-	infoSkipApps := false
-	if rawValue := getEnv(envInfoSkipApps); rawValue != "" {
+	infoApps := false
+	if rawValue := getEnv(envInfoApps); rawValue != "" {
 		value, err := strconv.ParseBool(rawValue)
 		if err != nil {
-			return Config{}, fmt.Errorf("can not parse value for %q: %s", envInfoSkipApps, rawValue)
+			return Config{}, fmt.Errorf("can not parse value for %q: %s", envInfoApps, rawValue)
 		}
-		infoSkipApps = value
+		infoApps = value
 	}
 
 	result := Config{
@@ -231,7 +236,9 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		Password:      getEnv(envPassword),
 		AuthToken:     getEnv(envAuthToken),
 		TLSSkipVerify: tlsSkipVerify,
-		InfoSkipApps:  infoSkipApps,
+		Info: InfoConfig{
+			Apps: infoApps,
+		},
 	}
 
 	if raw := getEnv(envTimeout); raw != "" {
@@ -276,8 +283,8 @@ func mergeConfig(base, override Config) Config {
 		result.TLSSkipVerify = override.TLSSkipVerify
 	}
 
-	if override.InfoSkipApps {
-		result.InfoSkipApps = override.InfoSkipApps
+	if override.Info.Apps {
+		result.Info.Apps = override.Info.Apps
 	}
 
 	return result
