@@ -12,7 +12,7 @@ func TestInfoURL(t *testing.T) {
 		wantURL   string
 	}{
 		{
-			desc:      "default",
+			desc:      "do not skip apps",
 			serverURL: "https://nextcloud.example.com",
 			wantURL:   "https://nextcloud.example.com/ocs/v2.php/apps/serverinfo/api/v1/info?format=json&skipApps=false",
 		},
