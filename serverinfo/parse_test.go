@@ -11,6 +11,7 @@ func TestParseJSON(t *testing.T) {
 		"negative-space.json",
 		"na-values.json",
 		"nc22.json",
+		"large-freespace.json",
 	}
 
 	for _, inputFile := range inputFiles {
