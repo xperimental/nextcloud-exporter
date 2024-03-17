@@ -170,6 +170,27 @@ func TestConfig(t *testing.T) {
 			},
 		},
 		{
+			desc: "auth token env, skip apps",
+			args: []string{
+				"test",
+			},
+			env: map[string]string{
+				envServerURL: "http://localhost",
+				envAuthToken: "auth-token",
+				envInfoApps:  "true",
+			},
+			wantErr: nil,
+			wantConfig: Config{
+				ListenAddr: defaults.ListenAddr,
+				Timeout:    defaults.Timeout,
+				ServerURL:  "http://localhost",
+				AuthToken:  "auth-token",
+				Info: InfoConfig{
+					Apps: true,
+				},
+			},
+		},
+		{
 			desc: "token file",
 			args: []string{
 				"test",
@@ -279,6 +300,16 @@ func TestConfig(t *testing.T) {
 				envTLSSkipVerify: "invalid",
 			},
 			wantErr: errors.New(`error reading environment variables: can not parse value for "NEXTCLOUD_TLS_SKIP_VERIFY": invalid`),
+		},
+		{
+			desc: "fail parsing infoSkipApps env",
+			args: []string{
+				"test",
+			},
+			env: map[string]string{
+				envInfoApps: "invalid",
+			},
+			wantErr: errors.New(`error reading environment variables: can not parse value for "NEXTCLOUD_INFO_APPS": invalid`),
 		},
 	}
 

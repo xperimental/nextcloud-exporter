@@ -7,11 +7,6 @@ import (
 	"strconv"
 )
 
-const (
-	// InfoPath contains the path to the serverinfo endpoint.
-	InfoPath = "/ocs/v2.php/apps/serverinfo/api/v1/info?format=json"
-)
-
 // ServerInfo contains the complete data received from the server.
 type ServerInfo struct {
 	Meta Meta `json:"meta"`

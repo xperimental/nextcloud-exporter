@@ -85,17 +85,19 @@ var (
 )
 
 type nextcloudCollector struct {
-	log        logrus.FieldLogger
-	infoClient client.InfoClient
+	log         logrus.FieldLogger
+	infoClient  client.InfoClient
+	appsMetrics bool
 
 	upMetric           prometheus.Gauge
 	scrapeErrorsMetric *prometheus.CounterVec
 }
 
-func RegisterCollector(log logrus.FieldLogger, infoClient client.InfoClient) error {
+func RegisterCollector(log logrus.FieldLogger, infoClient client.InfoClient, appsMetrics bool) error {
 	c := &nextcloudCollector{
-		log:        log,
-		infoClient: infoClient,
+		log:         log,
+		infoClient:  infoClient,
+		appsMetrics: appsMetrics,
 
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: metricPrefix + "up",
@@ -149,11 +151,11 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 		return err
 	}
 
-	return readMetrics(ch, status)
+	return readMetrics(ch, status, c.appsMetrics)
 }
 
-func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) error {
-	if err := collectSimpleMetrics(ch, status); err != nil {
+func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo, appsMetrics bool) error {
+	if err := collectSimpleMetrics(ch, status, appsMetrics); err != nil {
 		return err
 	}
 
@@ -190,19 +192,13 @@ func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) err
 	return nil
 }
 
-func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) error {
-	metrics := []struct {
-		desc  *prometheus.Desc
-		value float64
-	}{
-		{
-			desc:  appsInstalledDesc,
-			value: float64(status.Data.Nextcloud.System.Apps.Installed),
-		},
-		{
-			desc:  appsUpdatesDesc,
-			value: float64(status.Data.Nextcloud.System.Apps.AvailableUpdates),
-		},
+type simpleMetric struct {
+	desc  *prometheus.Desc
+	value float64
+}
+
+func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo, appsMetrics bool) error {
+	metrics := []simpleMetric{
 		{
 			desc:  usersDesc,
 			value: float64(status.Data.Nextcloud.Storage.Users),
@@ -240,6 +236,20 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 			value: float64(status.Data.Server.Database.Size),
 		},
 	}
+
+	if appsMetrics {
+		metrics = append(metrics, []simpleMetric{
+			{
+				desc:  appsInstalledDesc,
+				value: float64(status.Data.Nextcloud.System.Apps.Installed),
+			},
+			{
+				desc:  appsUpdatesDesc,
+				value: float64(status.Data.Nextcloud.System.Apps.AvailableUpdates),
+			},
+		}...)
+	}
+
 	for _, m := range metrics {
 		metric, err := prometheus.NewConstMetric(m.desc, prometheus.GaugeValue, m.value)
 		if err != nil {
