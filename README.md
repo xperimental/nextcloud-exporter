@@ -87,7 +87,7 @@ Usage of nextcloud-exporter:
   -a, --addr string          Address to listen on for connections. (default ":9205")
       --auth-token string    Authentication token. Can replace username and password when using Nextcloud 22 or newer.
   -c, --config-file string   Path to YAML configuration file.
-      --info-skip-apps       Skip metrics for installed apps and app updates.
+      --enable-info-apps     Enable gathering of apps-related metrics.
       --login                Use interactive login to create app password.
   -p, --password string      Password for connecting to Nextcloud.
   -s, --server string        URL to Nextcloud server.
@@ -111,16 +111,16 @@ There are three methods of configuring the nextcloud-exporter (higher methods ta
 
 All settings can also be specified through environment variables:
 
-|        Environment variable | Flag equivalent   |
-|----------------------------:|:------------------|
-|          `NEXTCLOUD_SERVER` | --server          |
-|        `NEXTCLOUD_USERNAME` | --username        |
-|        `NEXTCLOUD_PASSWORD` | --password        |
-|      `NEXTCLOUD_AUTH_TOKEN` | --auth-token      |
-|  `NEXTCLOUD_LISTEN_ADDRESS` | --addr            |
-|         `NEXTCLOUD_TIMEOUT` | --timeout         |
-| `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify |
-|  `NEXTCLOUD_INFO_SKIP_APPS` | --info-skip-apps  |
+|        Environment variable | Flag equivalent    |
+|----------------------------:|:-------------------|
+|          `NEXTCLOUD_SERVER` | --server           |
+|        `NEXTCLOUD_USERNAME` | --username         |
+|        `NEXTCLOUD_PASSWORD` | --password         |
+|      `NEXTCLOUD_AUTH_TOKEN` | --auth-token       |
+|  `NEXTCLOUD_LISTEN_ADDRESS` | --addr             |
+|         `NEXTCLOUD_TIMEOUT` | --timeout          |
+| `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify  |
+|       `NEXTCLOUD_INFO_APPS` | --enable-info-apps |
 
 #### Configuration file
 
@@ -138,7 +138,8 @@ password: "example"
 listenAddress: ":9205"
 timeout: "5s"
 tlsSkipVerify: false
-infoSkipApps: false
+info:
+  apps: false
 ```
 
 ### Loading Credentials from Files
