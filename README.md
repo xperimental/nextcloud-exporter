@@ -99,6 +99,10 @@ Usage of nextcloud-exporter:
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
 
+### Example Dashboard
+
+The repository contains an [example Grafana dashboard](contrib/grafana-dashboard.json) that can be imported into Grafana. The dashboard is also available as ID `20716` from the [Grafana Dashboard Exchange](https://grafana.com/grafana/dashboards/20716-nextcloud/).
+
 ### Configuration methods
 
 There are three methods of configuring the nextcloud-exporter (higher methods take precedence over lower ones):
