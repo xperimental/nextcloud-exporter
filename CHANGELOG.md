@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - App-related metrics (installed, available updates) are opt-in now, mirroring the change in Nextcloud 28
 
+### Fixed
+
+- Error parsing "free space" reported by Nextcloud when number is very large
+
 ## [0.6.2] - 2023-10-15
 
 ### Changed

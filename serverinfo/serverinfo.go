@@ -36,34 +36,34 @@ type Nextcloud struct {
 
 // System contains nextcloud configuration and system information.
 type System struct {
-	Version             string `json:"version"`
-	Theme               string `json:"theme"`
-	EnableAvatars       bool   `json:"enable_avatars"`
-	EnablePreviews      bool   `json:"enable_previews"`
-	MemcacheLocal       string `json:"memcache.local"`
-	MemcacheDistributed string `json:"memcache.distributed"`
-	MemcacheLocking     string `json:"memcache.locking"`
-	FilelockingEnabled  bool   `json:"filelocking.enabled"`
-	Debug               bool   `json:"debug"`
-	FreeSpace           int64  `json:"freespace"`
-	Apps                Apps   `json:"apps"`
+	Version             string  `json:"version"`
+	Theme               string  `json:"theme"`
+	EnableAvatars       bool    `json:"enable_avatars"`
+	EnablePreviews      bool    `json:"enable_previews"`
+	MemcacheLocal       string  `json:"memcache.local"`
+	MemcacheDistributed string  `json:"memcache.distributed"`
+	MemcacheLocking     string  `json:"memcache.locking"`
+	FilelockingEnabled  bool    `json:"filelocking.enabled"`
+	Debug               bool    `json:"debug"`
+	FreeSpace           float64 `json:"freespace"`
+	Apps                Apps    `json:"apps"`
 }
 
 const boolYes = "yes"
 
 func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var raw struct {
-		Version             string `xml:"version"`
-		Theme               string `xml:"theme"`
-		EnableAvatars       string `xml:"enable_avatars"`
-		EnablePreviews      string `xml:"enable_previews"`
-		MemcacheLocal       string `xml:"memcache.local"`
-		MemcacheDistributed string `xml:"memcache.distributed"`
-		MemcacheLocking     string `xml:"memcache.locking"`
-		FilelockingEnabled  string `xml:"filelocking.enabled"`
-		Debug               string `xml:"debug"`
-		FreeSpace           int64  `xml:"freespace"`
-		Apps                Apps   `xml:"apps"`
+		Version             string  `xml:"version"`
+		Theme               string  `xml:"theme"`
+		EnableAvatars       string  `xml:"enable_avatars"`
+		EnablePreviews      string  `xml:"enable_previews"`
+		MemcacheLocal       string  `xml:"memcache.local"`
+		MemcacheDistributed string  `xml:"memcache.distributed"`
+		MemcacheLocking     string  `xml:"memcache.locking"`
+		FilelockingEnabled  string  `xml:"filelocking.enabled"`
+		Debug               string  `xml:"debug"`
+		FreeSpace           float64 `xml:"freespace"`
+		Apps                Apps    `xml:"apps"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -84,17 +84,17 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 func (s *System) UnmarshalJSON(data []byte) error {
 	var raw struct {
-		Version             string `json:"version"`
-		Theme               string `json:"theme"`
-		EnableAvatars       string `json:"enable_avatars"`
-		EnablePreviews      string `json:"enable_previews"`
-		MemcacheLocal       string `json:"memcache.local"`
-		MemcacheDistributed string `json:"memcache.distributed"`
-		MemcacheLocking     string `json:"memcache.locking"`
-		FilelockingEnabled  string `json:"filelocking.enabled"`
-		Debug               string `json:"debug"`
-		FreeSpace           int64  `json:"freespace"`
-		Apps                Apps   `json:"apps"`
+		Version             string  `json:"version"`
+		Theme               string  `json:"theme"`
+		EnableAvatars       string  `json:"enable_avatars"`
+		EnablePreviews      string  `json:"enable_previews"`
+		MemcacheLocal       string  `json:"memcache.local"`
+		MemcacheDistributed string  `json:"memcache.distributed"`
+		MemcacheLocking     string  `json:"memcache.locking"`
+		FilelockingEnabled  string  `json:"filelocking.enabled"`
+		Debug               string  `json:"debug"`
+		FreeSpace           float64 `json:"freespace"`
+		Apps                Apps    `json:"apps"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err

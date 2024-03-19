@@ -209,7 +209,7 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 		},
 		{
 			desc:  freeSpaceDesc,
-			value: float64(status.Data.Nextcloud.System.FreeSpace),
+			value: status.Data.Nextcloud.System.FreeSpace,
 		},
 		{
 			desc:  activeUsersDesc,
