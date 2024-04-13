@@ -47,6 +47,7 @@ type System struct {
 	Debug               bool    `json:"debug"`
 	FreeSpace           float64 `json:"freespace"`
 	Apps                Apps    `json:"apps"`
+	Update              Update  `json:"update"`
 }
 
 const boolYes = "yes"
@@ -64,6 +65,7 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		Debug               string  `xml:"debug"`
 		FreeSpace           float64 `xml:"freespace"`
 		Apps                Apps    `xml:"apps"`
+		Update              Update  `xml:"update"`
 	}
 	if err := d.DecodeElement(&raw, &start); err != nil {
 		return err
@@ -79,6 +81,7 @@ func (s *System) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	s.Debug = raw.Debug == boolYes
 	s.FreeSpace = raw.FreeSpace
 	s.Apps = raw.Apps
+	s.Update = raw.Update
 	return nil
 }
 
@@ -95,6 +98,7 @@ func (s *System) UnmarshalJSON(data []byte) error {
 		Debug               string  `json:"debug"`
 		FreeSpace           float64 `json:"freespace"`
 		Apps                Apps    `json:"apps"`
+		Update              Update  `json:"update"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
@@ -110,6 +114,7 @@ func (s *System) UnmarshalJSON(data []byte) error {
 	s.Debug = raw.Debug == boolYes
 	s.FreeSpace = raw.FreeSpace
 	s.Apps = raw.Apps
+	s.Update = raw.Update
 	return nil
 }
 
@@ -117,6 +122,12 @@ func (s *System) UnmarshalJSON(data []byte) error {
 type Apps struct {
 	Installed        uint `json:"num_installed"`
 	AvailableUpdates uint `json:"num_updates_available"`
+}
+
+// Update contains information about updates.
+type Update struct {
+	Available        bool   `json:"available"`
+	AvailableVersion string `json:"available_version"`
 }
 
 // Storage contains information about the nextcloud storage system.
