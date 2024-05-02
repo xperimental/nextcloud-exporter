@@ -74,14 +74,14 @@ func main() {
 		log.Infof("Nextcloud server: %s Authentication using token.", cfg.ServerURL)
 	}
 
-	infoURL := serverinfo.InfoURL(cfg.ServerURL, !cfg.Info.Apps)
+	infoURL := serverinfo.InfoURL(cfg.ServerURL, !cfg.Info.Apps, !cfg.Info.Update)
 
 	if cfg.TLSSkipVerify {
 		log.Warn("HTTPS certificate verification is disabled.")
 	}
 
 	infoClient := client.New(infoURL, cfg.Username, cfg.Password, cfg.AuthToken, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
-	if err := metrics.RegisterCollector(log, infoClient, cfg.Info.Apps); err != nil {
+	if err := metrics.RegisterCollector(log, infoClient, cfg.Info.Apps, cfg.Info.Update); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
 
