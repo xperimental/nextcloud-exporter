@@ -25,7 +25,7 @@ var (
 	systemUpdateAvailableDesc = prometheus.NewDesc(
 		metricPrefix+"system_update_available",
 		"Contains information whether a system update is available (0 = no, 1 = yes). The version label contains the latest available nextcloud version.",
-		[]string{"version"}, nil)
+		[]string{"version", "available_version"}, nil)
 	appsInstalledDesc = prometheus.NewDesc(
 		metricPrefix+"apps_installed_total",
 		"Number of currently installed apps",
@@ -275,14 +275,14 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 
 func collectUpdate(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) error {
 	systemInfo := status.Data.Nextcloud.System
-	updateAvailableValue := 1.0
+	updateAvailableValue := 0.0
 
 	// Fix small bug: its indicated as "true" even if there is no real update available.
 	if systemInfo.Update.Available && systemInfo.Version != systemInfo.Update.AvailableVersion {
 		updateAvailableValue = 1.0
 	}
 
-	metric, err := prometheus.NewConstMetric(systemUpdateAvailableDesc, prometheus.GaugeValue, updateAvailableValue, systemInfo.Update.AvailableVersion)
+	metric, err := prometheus.NewConstMetric(systemUpdateAvailableDesc, prometheus.GaugeValue, updateAvailableValue, systemInfo.Version, systemInfo.Update.AvailableVersion)
 	if err != nil {
 		return fmt.Errorf("error creating metric for %s: %w", systemUpdateAvailableDesc, err)
 	}
