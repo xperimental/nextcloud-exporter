@@ -24,7 +24,7 @@ var (
 		[]string{"version"}, nil)
 	systemUpdateAvailableDesc = prometheus.NewDesc(
 		metricPrefix+"system_update_available",
-		"Contains information whether a system update is available (0 = no, 1 = yes). The version label contains the latest available nextcloud version.",
+		"Contains information whether a system update is available (0 = no, 1 = yes). The available_version label contains the latest available nextcloud version, whereas the version label contains the current installed nextcloud version.",
 		[]string{"version", "available_version"}, nil)
 	appsInstalledDesc = prometheus.NewDesc(
 		metricPrefix+"apps_installed_total",
