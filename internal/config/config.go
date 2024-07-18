@@ -172,7 +172,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.StringVar(&result.AuthToken, "auth-token", defaults.AuthToken, "Authentication token. Can replace username and password when using Nextcloud 22 or newer.")
 	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
 	flags.BoolVar(&result.Info.Apps, "enable-info-apps", defaults.Info.Apps, "Enable gathering of apps-related metrics.")
-	flags.BoolVar(&result.Info.Update, "enable-info-update", defaults.Info.Update, "Enable gathering of system update-related metrics.")
+	flags.BoolVar(&result.Info.Update, "enable-info-update", defaults.Info.Update, "Enable metric showing system update availability.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 

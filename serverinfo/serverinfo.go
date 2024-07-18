@@ -124,7 +124,7 @@ type Apps struct {
 	AvailableUpdates uint `json:"num_updates_available"`
 }
 
-// Update contains information about updates.
+// Update contains information about Nextcloud system updates.
 type Update struct {
 	Available        bool   `json:"available"`
 	AvailableVersion string `json:"available_version"`
