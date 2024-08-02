@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New metric showing available Nextcloud update (`nextcloud_system_update_available`)
+
 ## [0.7.0] - 2024-03-21
 
 ### Added
