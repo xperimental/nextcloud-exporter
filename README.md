@@ -17,9 +17,13 @@ The following tags are available:
 - `latest` pointing to the most recent released version
 - `master` pointing to the latest build from the default branch
 
+### Pre-built binaries
+
+The [releases](https://github.com/xperimental/nextcloud-exporter/releases) page contains pre-built binaries for AMD64 and ARM64 linux.
+
 ### Build from Source
 
-If you have a recent (>= 1.16) working Go installation and GNU Make, getting the binary should be as simple as
+If you have a recent Go installation (see `go.mod` for the minimum version), Git and GNU Make, the following commands will check out the repository and compile the binary from source:
 
 ```bash
 git clone https://github.com/xperimental/nextcloud-exporter.git
