@@ -108,7 +108,7 @@ After starting the server will offer the metrics on the `/metrics` endpoint, whi
 
 The repository contains an [example Grafana dashboard](contrib/grafana-dashboard.json) that can be imported into Grafana. The dashboard is also available as ID `20716` from the [Grafana Dashboard Exchange](https://grafana.com/grafana/dashboards/20716-nextcloud/).
 
-Note that there is an old dashboard [Nextcloud Exporter Prometheus Dashboard](https://grafana.com/grafana/dashboards/11033-nextcloud/) by me that is no longer maintained. you can safely ignore this.
+*Note: there may be other Grafana dashboards created by the community to use data from this exporter. [This one](https://grafana.com/grafana/dashboards/20716-nextcloud/) is the "official" dashboard, as shown by the `Published by: xperimental`. Others may have issues or be outdated.*
 
 ### Configuration methods
 
