@@ -15,3 +15,5 @@ jobs:
       uses: golangci/golangci-lint-action@v4
       with:
         version: v1.62.2
+    - name: promtool
+      run: make lint-promtool
