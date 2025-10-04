@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	nextcloudTokenHeader = "NC-Token"
+	nextcloudTokenHeader  = "NC-Token"
+	maintenanceModeHeader = "X-Nextcloud-Maintenance-Mode"
 )
 
 var (
@@ -62,7 +63,7 @@ func New(infoURL, username, password, authToken string, timeout time.Duration, u
 		case http.StatusTooManyRequests:
 			return nil, ErrRatelimit
 		case http.StatusServiceUnavailable:
-			if res.Header.Get("X-Nextcloud-Maintenance-Mode") != "" {
+			if res.Header.Get(maintenanceModeHeader) != "" {
 				return nil, ErrMaintenanceMode
 			}
 
