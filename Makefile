@@ -17,12 +17,19 @@ test:
 	$(GO_CMD) test -cover ./...
 
 .PHONY: lint
-lint: $(GOLANGCI_LINT)
+lint: lint-go lint-promtool
+
+.PHONY: lint-go
+lint-go: $(GOLANGCI_LINT)
 	$(GOLANGCI_LINT) run
 
-.PHONY: lint-fix
-lint-fix: $(GOLANGCI_LINT)
+.PHONY: lint-go-fix
+lint-go-fix: $(GOLANGCI_LINT)
 	$(GOLANGCI_LINT) run --fix
+
+.PHONY: lint-promtool
+lint-promtool: $(PROMTOOL) contrib/prometheus-alerts.yaml
+	$(PROMTOOL) check rules contrib/prometheus-alerts.yaml
 
 .PHONY: build-binary
 build-binary:
@@ -49,7 +56,7 @@ all-images:
 	docker buildx build -t "ghcr.io/$(DOCKER_REPO):$(DOCKER_TAG)" -t "docker.io/$(DOCKER_REPO):$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
 
 .PHONY: tools
-tools: $(BINGO) $(GOLANGCI_LINT)
+tools: $(BINGO) $(GOLANGCI_LINT) $(PROMTOOL)
 	@echo Tools built.
 
 .PHONY: clean

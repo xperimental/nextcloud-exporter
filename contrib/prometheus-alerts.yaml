@@ -1,0 +1,14 @@
+groups:
+- name: nextcloud
+  rules:
+  - alert: NextcloudUpdateWarning
+    expr: |
+      sum by (instance, version, available_version) (nextcloud_system_update_available) > 0
+    for: 15m
+    annotations:
+      summary: |
+        Version {{ index $labels "available_version" }} available for Nextcloud server {{ index $labels "instance" }}.
+      description: |
+        The Nextcloud server at {{ index $labels "instance" }} can be updated to version {{ index $labels "available_version" }} (from {{ index $labels "version" }}).
+    labels:
+      severity: warning
