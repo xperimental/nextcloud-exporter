@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+
 	"github.com/xperimental/nextcloud-exporter/internal/testutil"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
@@ -133,6 +134,25 @@ func TestClient(t *testing.T) {
 				})
 			},
 			wantErr: ErrRatelimit,
+		},
+		{
+			desc: "unavailable",
+			handler: func(t *testing.T) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+					w.WriteHeader(http.StatusServiceUnavailable)
+				})
+			},
+			wantErr: ErrUnavailable,
+		},
+		{
+			desc: "maintenance",
+			handler: func(t *testing.T) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+					w.Header().Set(maintenanceModeHeader, "1")
+					w.WriteHeader(http.StatusServiceUnavailable)
+				})
+			},
+			wantErr: ErrMaintenanceMode,
 		},
 	}
 
