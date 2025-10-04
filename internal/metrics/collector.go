@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -136,9 +137,10 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 		c.log.Errorf("Error during scrape: %s", err)
 
 		cause := labelErrorCauseOther
-		if err == client.ErrNotAuthorized {
+		switch {
+		case errors.Is(err, client.ErrNotAuthorized):
 			cause = labelErrorCauseAuth
-		} else if err == client.ErrRatelimit {
+		case errors.Is(err, client.ErrRatelimit):
 			cause = labelErrorCauseRatelimit
 		}
 		c.scrapeErrorsMetric.WithLabelValues(cause).Inc()
