@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Additional labels on `nextcloud_scrape_errors_total`
+  - `unavailable` for HTTP Service Unavailable (503) errors
+  - `maintenance` for maintenance mode
+
 ## [0.8.0] - 2024-12-22
 
 ### Added

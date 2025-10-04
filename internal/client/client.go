@@ -15,8 +15,10 @@ const (
 )
 
 var (
-	ErrNotAuthorized = errors.New("wrong credentials")
-	ErrRatelimit     = errors.New("too many requests")
+	ErrNotAuthorized   = errors.New("wrong credentials")
+	ErrRatelimit       = errors.New("too many requests")
+	ErrUnavailable     = errors.New("service unavailable")
+	ErrMaintenanceMode = errors.New("maintenance mode")
 )
 
 type InfoClient func() (*serverinfo.ServerInfo, error)
@@ -59,6 +61,12 @@ func New(infoURL, username, password, authToken string, timeout time.Duration, u
 			return nil, ErrNotAuthorized
 		case http.StatusTooManyRequests:
 			return nil, ErrRatelimit
+		case http.StatusServiceUnavailable:
+			if res.Header.Get("X-Nextcloud-Maintenance-Mode") != "" {
+				return nil, ErrMaintenanceMode
+			}
+
+			return nil, ErrUnavailable
 		default:
 			return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 		}

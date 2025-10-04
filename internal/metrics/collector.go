@@ -6,6 +6,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
+
 	"github.com/xperimental/nextcloud-exporter/internal/client"
 	"github.com/xperimental/nextcloud-exporter/serverinfo"
 )
@@ -13,9 +14,11 @@ import (
 const (
 	metricPrefix = "nextcloud_"
 
-	labelErrorCauseOther     = "other"
-	labelErrorCauseAuth      = "auth"
-	labelErrorCauseRatelimit = "ratelimit"
+	labelErrorCauseOther       = "other"
+	labelErrorCauseAuth        = "auth"
+	labelErrorCauseRatelimit   = "ratelimit"
+	labelErrorCauseUnavailable = "unavailable"
+	labelErrorCauseMaintenance = "maintenance"
 )
 
 var (
@@ -142,6 +145,10 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 			cause = labelErrorCauseAuth
 		case errors.Is(err, client.ErrRatelimit):
 			cause = labelErrorCauseRatelimit
+		case errors.Is(err, client.ErrUnavailable):
+			cause = labelErrorCauseUnavailable
+		case errors.Is(err, client.ErrMaintenanceMode):
+			cause = labelErrorCauseMaintenance
 		}
 		c.scrapeErrorsMetric.WithLabelValues(cause).Inc()
 		c.upMetric.Set(0)
