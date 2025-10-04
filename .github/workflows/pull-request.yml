@@ -12,8 +12,8 @@ jobs:
       with:
         go-version-file: go.mod
     - name: golangci-lint
-      uses: golangci/golangci-lint-action@v4
+      uses: golangci/golangci-lint-action@v8
       with:
-        version: v1.62.2
+        version: v2.5.0
     - name: promtool
       run: make lint-promtool
