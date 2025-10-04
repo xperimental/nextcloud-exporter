@@ -20,7 +20,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version-file: go.mod
+        go-version: "1.25.1" # workaround for tests failing with automatically-downloaded Go toolchain (https://github.com/golang/go/issues/75031)
     - name: Build and Test
       run: make
   docker:
