@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.23.4-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25.1-alpine AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -17,7 +17,7 @@ RUN go mod verify
 COPY . /build/
 RUN make build-binary
 
-FROM --platform=$TARGETPLATFORM busybox
+FROM busybox
 LABEL maintainer="Robert Jacob <xperimental@solidproject.de>"
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt

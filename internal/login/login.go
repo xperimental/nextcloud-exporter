@@ -83,7 +83,7 @@ func (c *Client) StartInteractive() error {
 	}
 
 	if version < minimumMajorVersion {
-		return fmt.Errorf("Nextcloud version too old for login: %d Minimum: %d", version, minimumMajorVersion)
+		return fmt.Errorf("Nextcloud version too old for login: %d Minimum: %d", version, minimumMajorVersion) //nolint:staticcheck
 	}
 
 	info, err := c.getLoginInfo()
