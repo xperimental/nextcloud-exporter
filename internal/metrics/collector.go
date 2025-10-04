@@ -13,9 +13,10 @@ import (
 const (
 	metricPrefix = "nextcloud_"
 
-	labelErrorCauseOther     = "other"
-	labelErrorCauseAuth      = "auth"
-	labelErrorCauseRatelimit = "ratelimit"
+	labelErrorCauseOther       = "other"
+	labelErrorCauseAuth        = "auth"
+	labelErrorCauseRatelimit   = "ratelimit"
+	labelErrorCauseUnavailable = "unavailable"
 )
 
 var (
@@ -142,6 +143,8 @@ func (c *nextcloudCollector) Collect(ch chan<- prometheus.Metric) {
 			cause = labelErrorCauseAuth
 		case errors.Is(err, client.ErrRatelimit):
 			cause = labelErrorCauseRatelimit
+		case errors.Is(err, client.ErrUnavailable):
+			cause = labelErrorCauseUnavailable
 		}
 		c.scrapeErrorsMetric.WithLabelValues(cause).Inc()
 		c.upMetric.Set(0)

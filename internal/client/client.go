@@ -17,6 +17,7 @@ const (
 var (
 	ErrNotAuthorized = errors.New("wrong credentials")
 	ErrRatelimit     = errors.New("too many requests")
+	ErrUnavailable   = errors.New("service unavailable / maintenance mode")
 )
 
 type InfoClient func() (*serverinfo.ServerInfo, error)
@@ -59,6 +60,8 @@ func New(infoURL, username, password, authToken string, timeout time.Duration, u
 			return nil, ErrNotAuthorized
 		case http.StatusTooManyRequests:
 			return nil, ErrRatelimit
+		case http.StatusServiceUnavailable:
+			return nil, ErrUnavailable
 		default:
 			return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 		}
