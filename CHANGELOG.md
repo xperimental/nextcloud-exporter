@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2025-10-12
+
 ### Added
 
+- Prometheus alerting rule for notifying for updates (see `contrib/prometheus-alerts.yaml`)
 - Additional labels on `nextcloud_scrape_errors_total`
   - `unavailable` for HTTP Service Unavailable (503) errors
   - `maintenance` for maintenance mode
@@ -120,6 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[0.9.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.9.0
 [0.8.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.8.0
 [0.7.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.7.0
 [0.6.2]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.6.2
