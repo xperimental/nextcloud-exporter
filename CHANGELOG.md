@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `maintenance` for maintenance mode
 - Panels for scrape errors and version info in Grafana Dashboard
 
+### Changed
+
+- Updated Go runtime and dependencies
+
 ## [0.8.0] - 2024-12-22
 
 ### Added
