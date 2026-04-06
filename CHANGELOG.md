@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-04-06
+
 ### Added
 
 - Prometheus alerting rule notifying about scrape errors (see `contrib/prometheus-alerts.yaml`)
@@ -131,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[0.9.1]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.9.1
 [0.9.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.9.0
 [0.8.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.8.0
 [0.7.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.7.0
