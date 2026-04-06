@@ -2,7 +2,7 @@ module github.com/xperimental/nextcloud-exporter
 
 go 1.24.0
 
-toolchain go1.25.2
+toolchain go1.26.1
 
 require (
 	github.com/google/go-cmp v0.7.0
