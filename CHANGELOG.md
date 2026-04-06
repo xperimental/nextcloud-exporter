@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Prometheus alerting rule notifying about scrape errors (see `contrib/prometheus-alerts.yaml`)
+
 ### Changed
 
 - Updated Go runtime and dependencies

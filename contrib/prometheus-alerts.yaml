@@ -12,3 +12,14 @@ groups:
         The Nextcloud server at {{ index $labels "instance" }} can be updated to version {{ index $labels "available_version" }} (from {{ index $labels "version" }}).
     labels:
       severity: warning
+  - alert: NextcloudScrapeErrorsCritical
+    expr: |
+      sum by (instance, cause) (rate(nextcloud_scrape_errors_total[5m])) > 0
+    for: 15m
+    annotations:
+      summary: |
+        Nextcloud server {{ index $labels "instance" }} has scrape errors of type {{ index $labels "cause" }}.
+      description: |
+        The exporter is unable to reach the Nextcloud server at {{ index $labels "instance" }}. The cause is listed as: {{ index $labels "cause" }}
+    labels:
+      severity: critical
