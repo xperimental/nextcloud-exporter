@@ -28,7 +28,7 @@ var (
 		[]string{"version"}, nil)
 	systemUpdateAvailableDesc = prometheus.NewDesc(
 		metricPrefix+"system_update_available",
-		"Contains information whether a system update is available (0 = no, 1 = yes). The available_version label contains the latest available nextcloud version, whereas the version label contains the current installed nextcloud version.",
+		"Contains information whether a system update is available (0 = no, 1 = yes). The available_version label contains the latest available nextcloud version, whereas the version label contains the current installed nextcloud version. If the update security check is enabled, only updates containing security fixes are reported.",
 		[]string{"version", "available_version"}, nil)
 	appsInstalledDesc = prometheus.NewDesc(
 		metricPrefix+"apps_installed_total",
@@ -97,18 +97,21 @@ type nextcloudCollector struct {
 	infoClient    client.InfoClient
 	appsMetrics   bool
 	updateMetrics bool
-
+	security      *SecurityChecker
 	upMetric           prometheus.Gauge
 	scrapeErrorsMetric *prometheus.CounterVec
 }
 
-func RegisterCollector(log logrus.FieldLogger, infoClient client.InfoClient, appsMetrics bool, updateMetrics bool) error {
+// RegisterCollector регистрирует коллектор. Аргумент security может быть nil, тогда
+// проверка исправлений безопасности не выполняется и nextcloud_system_update_available
+// сообщает о любом доступном обновлении.
+func RegisterCollector(log logrus.FieldLogger, infoClient client.InfoClient, appsMetrics bool, updateMetrics bool, security *SecurityChecker) error {
 	c := &nextcloudCollector{
 		log:           log,
 		infoClient:    infoClient,
 		appsMetrics:   appsMetrics,
 		updateMetrics: updateMetrics,
-
+		security:      security,
 		upMetric: prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: metricPrefix + "up",
 			Help: "Indicates if the metrics could be scraped by the exporter.",
@@ -166,16 +169,16 @@ func (c *nextcloudCollector) collectNextcloud(ch chan<- prometheus.Metric) error
 		return err
 	}
 
-	return readMetrics(ch, status, c.appsMetrics, c.updateMetrics)
+	return readMetrics(ch, status, c.appsMetrics, c.updateMetrics, c.security)
 }
 
-func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo, appsMetrics bool, updateMetrics bool) error {
+func readMetrics(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo, appsMetrics bool, updateMetrics bool, security *SecurityChecker) error {
 	if err := collectSimpleMetrics(ch, status, appsMetrics); err != nil {
 		return err
 	}
 
 	if updateMetrics {
-		if err := collectUpdate(ch, status); err != nil {
+		if err := collectUpdate(ch, status, security); err != nil {
 			return err
 		}
 	}
@@ -282,13 +285,18 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 	return nil
 }
 
-func collectUpdate(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo) error {
+func collectUpdate(ch chan<- prometheus.Metric, status *serverinfo.ServerInfo, security *SecurityChecker) error {
 	systemInfo := status.Data.Nextcloud.System
 	updateAvailableValue := 0.0
 
 	// Fix small bug: its indicated as "true" even if there is no real update available.
 	if systemInfo.Update.Available && systemInfo.Version != systemInfo.Update.AvailableVersion {
 		updateAvailableValue = 1.0
+		if security != nil {
+			if hasFixes, ok := security.Check(systemInfo.Version, systemInfo.Update.AvailableVersion); ok && !hasFixes {
+				updateAvailableValue = 0.0
+			}
+		}
 	}
 
 	metric, err := prometheus.NewConstMetric(systemUpdateAvailableDesc, prometheus.GaugeValue, updateAvailableValue, systemInfo.Version, systemInfo.Update.AvailableVersion)

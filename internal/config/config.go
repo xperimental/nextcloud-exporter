@@ -23,6 +23,8 @@ const (
 	envTLSSkipVerify = envPrefix + "TLS_SKIP_VERIFY"
 	envInfoApps      = envPrefix + "INFO_APPS"
 	envInfoUpdate    = envPrefix + "INFO_UPDATE"
+
+	envInfoUpdateSecurity = envPrefix + "INFO_UPDATE_SECURITY"
 )
 
 // RunMode signals what the main application should do after parsing the options.
@@ -71,6 +73,7 @@ type Config struct {
 type InfoConfig struct {
 	Apps   bool `yaml:"apps"`
 	Update bool `yaml:"update"`
+	UpdateSecurity bool `yaml:"updateSecurity"`
 }
 
 var (
@@ -78,12 +81,17 @@ var (
 	errValidateNoAuth      = errors.New("need to either set username/password or a token")
 	errValidateNoUsername  = errors.New("need to provide a username")
 	errValidateNoPassword  = errors.New("need to provide a password")
+	errValidateSecurityNeedsUpdate = errors.New("update security check needs update metrics, enable --enable-info-update")
 )
 
 // Validate checks if the configuration contains all necessary parameters.
 func (c Config) Validate() error {
 	if len(c.ServerURL) == 0 {
 		return errValidateNoServerURL
+	}
+
+	if c.Info.UpdateSecurity && !c.Info.Update {
+		return errValidateSecurityNeedsUpdate
 	}
 
 	if len(c.AuthToken) == 0 {
@@ -173,6 +181,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	flags.BoolVar(&result.TLSSkipVerify, "tls-skip-verify", defaults.TLSSkipVerify, "Skip certificate verification of Nextcloud server.")
 	flags.BoolVar(&result.Info.Apps, "enable-info-apps", defaults.Info.Apps, "Enable gathering of apps-related metrics.")
 	flags.BoolVar(&result.Info.Update, "enable-info-update", defaults.Info.Update, "Enable metric showing system update availability.")
+	flags.BoolVar(&result.Info.UpdateSecurity, "enable-info-update-security", defaults.Info.UpdateSecurity, "Only report available updates which contain security fixes. Needs --enable-info-update and access to api.github.com.")
 	modeLogin := flags.Bool("login", false, "Use interactive login to create app password.")
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
@@ -241,6 +250,15 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		infoUpdate = value
 	}
 
+	infoUpdateSecurity := false
+	if rawValue := getEnv(envInfoUpdateSecurity); rawValue != "" {
+		value, err := strconv.ParseBool(rawValue)
+		if err != nil {
+			return Config{}, fmt.Errorf("can not parse value for %q: %s", envInfoUpdateSecurity, rawValue)
+		}
+		infoUpdateSecurity = value
+	}
+
 	result := Config{
 		ListenAddr:    getEnv(envListenAddress),
 		ServerURL:     getEnv(envServerURL),
@@ -249,8 +267,9 @@ func loadConfigFromEnv(getEnv func(string) string) (Config, error) {
 		AuthToken:     getEnv(envAuthToken),
 		TLSSkipVerify: tlsSkipVerify,
 		Info: InfoConfig{
-			Apps:   infoApps,
-			Update: infoUpdate,
+			Apps:           infoApps,
+			Update:         infoUpdate,
+			UpdateSecurity: infoUpdateSecurity,
 		},
 	}
 
@@ -302,6 +321,10 @@ func mergeConfig(base, override Config) Config {
 
 	if override.Info.Update {
 		result.Info.Update = override.Info.Update
+	}
+
+	if override.Info.UpdateSecurity {
+		result.Info.UpdateSecurity = override.Info.UpdateSecurity
 	}
 
 	return result

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -80,8 +81,16 @@ func main() {
 		log.Warn("HTTPS certificate verification is disabled.")
 	}
 
+
+	var securityChecker *metrics.SecurityChecker
+	if cfg.Info.UpdateSecurity {
+		securityChecker = metrics.NewSecurityChecker(log, userAgent)
+		securityChecker.Start(context.Background())
+		log.Info("Security update check enabled: only updates containing security fixes are reported.")
+	}
+
 	infoClient := client.New(infoURL, cfg.Username, cfg.Password, cfg.AuthToken, cfg.Timeout, userAgent, cfg.TLSSkipVerify)
-	if err := metrics.RegisterCollector(log, infoClient, cfg.Info.Apps, cfg.Info.Update); err != nil {
+	if err := metrics.RegisterCollector(log, infoClient, cfg.Info.Apps, cfg.Info.Update, securityChecker); err != nil {
 		log.Fatalf("Failed to register collector: %s", err)
 	}
 

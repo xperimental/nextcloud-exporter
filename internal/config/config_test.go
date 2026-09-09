@@ -311,6 +311,63 @@ func TestConfig(t *testing.T) {
 			},
 			wantErr: errors.New(`error reading environment variables: can not parse value for "NEXTCLOUD_INFO_APPS": invalid`),
 		},
+		{
+			desc: "update security flag",
+			args: []string{
+				"test",
+				"--server",
+				"http://localhost",
+				"--auth-token",
+				"auth-token",
+				"--enable-info-update",
+				"--enable-info-update-security",
+			},
+			env:     map[string]string{},
+			wantErr: nil,
+			wantConfig: Config{
+				ListenAddr: defaults.ListenAddr,
+				Timeout:    defaults.Timeout,
+				ServerURL:  "http://localhost",
+				AuthToken:  "auth-token",
+				Info: InfoConfig{
+					Update:         true,
+					UpdateSecurity: true,
+				},
+			},
+		},
+		{
+			desc: "update security env",
+			args: []string{
+				"test",
+			},
+			env: map[string]string{
+				envServerURL:          "http://localhost",
+				envAuthToken:          "auth-token",
+				envInfoUpdate:         "true",
+				envInfoUpdateSecurity: "true",
+			},
+			wantErr: nil,
+			wantConfig: Config{
+				ListenAddr: defaults.ListenAddr,
+				Timeout:    defaults.Timeout,
+				ServerURL:  "http://localhost",
+				AuthToken:  "auth-token",
+				Info: InfoConfig{
+					Update:         true,
+					UpdateSecurity: true,
+				},
+			},
+		},
+		{
+			desc: "fail parsing infoUpdateSecurity env",
+			args: []string{
+				"test",
+			},
+			env: map[string]string{
+				envInfoUpdateSecurity: "invalid",
+			},
+			wantErr: errors.New(`error reading environment variables: can not parse value for "NEXTCLOUD_INFO_UPDATE_SECURITY": invalid`),
+		},
 	}
 
 	for _, tc := range tt {
@@ -388,6 +445,29 @@ func TestConfigValidate(t *testing.T) {
 				Username:  "exporter",
 			},
 			wantErr: errValidateNoPassword,
+		},
+		{
+			desc: "update security with update metrics",
+			config: Config{
+				ServerURL: "https://example.com",
+				AuthToken: "auth-token",
+				Info: InfoConfig{
+					Update:         true,
+					UpdateSecurity: true,
+				},
+			},
+			wantErr: nil,
+		},
+		{
+			desc: "update security without update metrics",
+			config: Config{
+				ServerURL: "https://example.com",
+				AuthToken: "auth-token",
+				Info: InfoConfig{
+					UpdateSecurity: true,
+				},
+			},
+			wantErr: errValidateSecurityNeedsUpdate,
 		},
 	}
 

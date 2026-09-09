@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `--enable-info-update-security` restricts `nextcloud_system_update_available` to updates
+  which contain security fixes, based on the advisories published for
+  `nextcloud/security-advisories`. Disabled by default. Needs `--enable-info-update` and
+  outgoing access to `api.github.com`.
+
 ## [0.9.1] - 2026-04-06
 
 ### Added

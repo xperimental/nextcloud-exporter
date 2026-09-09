@@ -92,7 +92,9 @@ Usage of nextcloud-exporter:
       --auth-token string    Authentication token. Can replace username and password when using Nextcloud 22 or newer.
   -c, --config-file string   Path to YAML configuration file.
       --enable-info-apps     Enable gathering of apps-related metrics.
-      --enable-info-update   Enable gathering of system update-related metrics.
+      --enable-info-update   Enable metric showing system update availability.
+      --enable-info-update-security
+                             Only report available updates which contain security fixes. Needs --enable-info-update and access to api.github.com.
       --login                Use interactive login to create app password.
   -p, --password string      Password for connecting to Nextcloud.
   -s, --server string        URL to Nextcloud server.
@@ -131,6 +133,7 @@ All settings can also be specified through environment variables:
 | `NEXTCLOUD_TLS_SKIP_VERIFY` | --tls-skip-verify    |
 |       `NEXTCLOUD_INFO_APPS` | --enable-info-apps   |
 |     `NEXTCLOUD_INFO_UPDATE` | --enable-info-update |
+| `NEXTCLOUD_INFO_UPDATE_SECURITY` | --enable-info-update-security |
 
 #### Configuration file
 
@@ -151,6 +154,7 @@ tlsSkipVerify: false
 info:
   apps: false
   update: false
+  updateSecurity: false
 ```
 
 ### Loading Credentials from Files
@@ -181,6 +185,51 @@ https://example.com/ocs/v2.php/apps/serverinfo/api/v1/info
 The path will be automatically added to the server URL you provide, so in the above example setting `--server https://example.com` would be sufficient.
 
 If you open this URL in a browser you should see an XML structure with the information that will be used by the exporter.
+
+### Update security check
+
+By default `nextcloud_system_update_available` is `1` whenever Nextcloud reports any newer
+version. Adding `--enable-info-update-security` narrows it down to updates which actually
+contain security fixes, so that routine patch releases stop raising the update alert:
+
+```bash
+nextcloud-exporter --server https://example.com --auth-token "$TOKEN" \
+  --enable-info-update --enable-info-update-security
+```
+
+The information comes from the advisories published for
+[nextcloud/security-advisories](https://github.com/nextcloud/security-advisories/security/advisories),
+which is the only machine-readable source that states in which version a given
+vulnerability was fixed. The release notes of `nextcloud/server` cannot be used for this:
+security fixes are merged from private forks and do not appear in the generated changelog.
+
+Things worth knowing before enabling it:
+
+- **The exporter needs outgoing access to `api.github.com`.** The advisory list is fetched
+  in the background every 12 hours, so a scrape never waits for GitHub. No token is needed:
+  a full refresh costs three requests, well within GitHub's limit of 60 requests per hour
+  per IP address.
+- **Only the free edition is considered.** Advisories for Nextcloud Enterprise list version
+  numbers which have no matching public release, so they are ignored.
+- **Any uncertainty reports the update.** While the first refresh is still running, when
+  GitHub is unreachable, or when the advisory list is older than 48 hours, the metric stays
+  at `1`, which is the behaviour without this option. The exporter logs the reason, and also
+  logs the advisory it matched:
+
+  ```plain
+  Security check: update 34.0.0.12 -> 34.0.3.2 contains fix for GHSA-99gw-ww6p-f2rr.
+  Security check: update 34.0.2.1 -> 34.0.3.2 contains no known security fixes.
+  ```
+- **The check errs towards reporting an update.** Advisories state the versions which
+  contain the fix, but the affected version ranges in the same records are unreliable, so
+  they are not evaluated. An update may therefore be reported as security relevant even
+  when the installed version was never affected.
+- **You lose the "any update available" signal.** With this option enabled there is no
+  metric left that reports non-security updates. Run a second exporter without the option
+  if you need both.
+
+The [test/](test/) directory contains a docker-compose setup which runs several Nextcloud
+versions side by side to verify the behaviour.
 
 ### Scrape configuration
 
@@ -217,6 +266,6 @@ These metrics are exported by `nextcloud-exporter`:
 | nextcloud_shares_federated_total       | Number of federated shares by direction `sent` / `received`                                                                                                                                                                                        |
 | nextcloud_shares_total                 | Number of shares by type: <br> `authlink`: shared password protected links <br> `group`: shared groups <br>`link`: all shared links <br> `user`: shared users <br> `mail`: shared by mail <br> `room`: shared with room                            |
 | nextcloud_system_info                  | Contains meta information about Nextcloud as labels. Value is always 1.                                                                                                                                                                            |
-| nextcloud_system_update_available      | Contains information whether a system update is available: <br>`0`: no update available<br>`1`: nextcloud update available<br>In case of 1=yes, `available_version` label contains the new version. This metric is only available if  activated.   |
+| nextcloud_system_update_available      | Contains information whether a system update is available: <br>`0`: no update available<br>`1`: nextcloud update available<br>In case of 1=yes, `available_version` label contains the new version. This metric is only available if  activated. If the [update security check](#update-security-check) is enabled, only updates containing security fixes are reported. |
 | nextcloud_up                           | Indicates if the metrics could be scraped by the exporter: <br>`1`: successful<br>`0`: unsuccessful (server down, server/endpoint not reachable, invalid credentials, ...)                                                                         |
 | nextcloud_users_total                  | Number of users of the instance                                                                                                                                                                                                                    |
