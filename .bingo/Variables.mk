@@ -35,9 +35,9 @@ $(GOLANGCI_LINT): $(BINGO_DIR)/golangci-lint.mod
 	@echo "(re)installing $(GOBIN)/golangci-lint-v2.14.0"
 	@cd $(BINGO_DIR) && GOWORK=off GOOS=$(GOHOSTOS) GOARCH=$(GOHOSTARCH) GOARM=$(GOHOSTARM) $(GO) build -mod=mod -modfile=golangci-lint.mod -o=$(GOBIN)/golangci-lint-v2.14.0 "github.com/golangci/golangci-lint/v2/cmd/golangci-lint"
 
-PROMTOOL := $(GOBIN)/promtool-v0.310.0
+PROMTOOL := $(GOBIN)/promtool-v0.315.0
 $(PROMTOOL): $(BINGO_DIR)/promtool.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/promtool-v0.310.0"
-	@cd $(BINGO_DIR) && GOWORK=off GOOS=$(GOHOSTOS) GOARCH=$(GOHOSTARCH) GOARM=$(GOHOSTARM) $(GO) build -mod=mod -modfile=promtool.mod -o=$(GOBIN)/promtool-v0.310.0 "github.com/prometheus/prometheus/cmd/promtool"
+	@echo "(re)installing $(GOBIN)/promtool-v0.315.0"
+	@cd $(BINGO_DIR) && GOWORK=off GOOS=$(GOHOSTOS) GOARCH=$(GOHOSTARCH) GOARM=$(GOHOSTARM) $(GO) build -mod=mod -modfile=promtool.mod -o=$(GOBIN)/promtool-v0.315.0 "github.com/prometheus/prometheus/cmd/promtool"
 
