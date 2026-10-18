@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-10-18
+
 ### Changed
 
 - Updated Go runtime and dependencies
@@ -141,6 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[0.9.2]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.9.2
 [0.9.1]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.9.1
 [0.9.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.9.0
 [0.8.0]: https://github.com/xperimental/nextcloud-exporter/releases/tag/v0.8.0
