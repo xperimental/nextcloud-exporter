@@ -12,10 +12,10 @@ func TestParseJSON(t *testing.T) {
 		"na-values.json",
 		"nc22.json",
 		"large-freespace.json",
+		"unknown-freespace.json",
 	}
 
 	for _, inputFile := range inputFiles {
-		inputFile := inputFile
 		t.Run(inputFile, func(t *testing.T) {
 			t.Parallel()
 
