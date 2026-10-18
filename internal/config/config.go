@@ -177,7 +177,7 @@ func loadConfigFromFlags(args []string) (result Config, configFile string, err e
 	modeVersion := flags.BoolP("version", "V", false, "Show version information and exit.")
 
 	if err := flags.Parse(args[1:]); err != nil {
-		if err == pflag.ErrHelp {
+		if errors.Is(err, pflag.ErrHelp) {
 			return Config{
 				RunMode: RunModeHelp,
 			}, "", nil
