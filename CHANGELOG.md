@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated Go runtime and dependencies
+
+### Fixed
+
+- Unknown free space no longer reported as zero free space
+
 ## [0.9.1] - 2026-04-06
 
 ### Added

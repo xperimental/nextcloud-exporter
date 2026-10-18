@@ -229,10 +229,6 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 			value: float64(status.Data.Nextcloud.Storage.Files),
 		},
 		{
-			desc:  freeSpaceDesc,
-			value: status.Data.Nextcloud.System.FreeSpace,
-		},
-		{
 			desc:  activeUsersDesc,
 			value: float64(status.Data.ActiveUsers.Last5Minutes),
 		},
@@ -277,6 +273,10 @@ func collectSimpleMetrics(ch chan<- prometheus.Metric, status *serverinfo.Server
 			return fmt.Errorf("error creating metric for %s: %w", m.desc, err)
 		}
 		ch <- metric
+	}
+
+	if freeSpace := status.Data.Nextcloud.System.FreeSpace; freeSpace != nil {
+		ch <- prometheus.MustNewConstMetric(freeSpaceDesc, prometheus.GaugeValue, *freeSpace)
 	}
 
 	return nil
