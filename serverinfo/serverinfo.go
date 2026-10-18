@@ -183,9 +183,9 @@ type Database struct {
 
 func (d *Database) UnmarshalJSON(data []byte) error {
 	var raw struct {
-		Type    string      `json:"type"`
-		Version string      `json:"version"`
-		Size    interface{} `json:"size"`
+		Type    string `json:"type"`
+		Version string `json:"version"`
+		Size    any    `json:"size"`
 	}
 
 	if err := json.Unmarshal(data, &raw); err != nil {
